@@ -1,0 +1,26 @@
+.biike-center-page {
+  .biike-center-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-center-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .center-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

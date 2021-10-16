@@ -1,0 +1,26 @@
+.biike-user-page {
+  .biike-user-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-user-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

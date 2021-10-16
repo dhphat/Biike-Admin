@@ -1,0 +1,24 @@
+.biike-default-layout {
+  min-height: 100vh !important;
+
+  .biike-layout-header {
+    // height: 60px;
+    background-color: white;
+    display: flex;
+    line-height: 20px !important;
+  }
+
+  .biike-layout-breadcrumb-item {
+    cursor: pointer;
+  }
+
+  .ant-layout-sider {
+    background-color: var(--primary-color) !important;
+  }
+  .ant-menu {
+    background-color: var(--primary-color) !important;
+  }
+  .logo {
+    width: 100px;
+  }
+}

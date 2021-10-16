@@ -1,0 +1,17 @@
+.biike-dashboard-page {
+  .biike-dashboard-content {
+    display: flex;
+    gap: 20px;
+
+    .dashboard-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

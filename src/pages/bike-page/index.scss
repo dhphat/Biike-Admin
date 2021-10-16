@@ -1,0 +1,26 @@
+.biike-bike-page {
+  .biike-bike-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-bike-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .bike-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.biike-wallet-page {
+  .biike-wallet-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-wallet-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .wallet-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

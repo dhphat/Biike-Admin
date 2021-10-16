@@ -1,0 +1,43 @@
+{
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ESNext",
+    "module": "CommonJS",
+    "lib": ["DOM", "ES2015", "ES2017", "ES2019", "ES2020", "ESNext"],
+    "jsx": "react-jsx",
+    "outDir": "./dist/",
+    "removeComments": true,
+    "noEmit": true,
+    "importHelpers": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    // "paths": {},
+
+    /* Source Map Options */
+
+    /* Experimental Options */
+
+    /* Advanced Options */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnreachableCode": true,
+    "resolveJsonModule": true
+  }
+}

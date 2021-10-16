@@ -1,0 +1,26 @@
+.biike-feedback-page {
+  .biike-feedback-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-feedback-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .feedback-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

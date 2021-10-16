@@ -1,0 +1,33 @@
+.biike-voucher-page {
+  .biike-voucher-tools {
+    display: flex;
+    gap: 10px;
+  }
+
+  .biike-voucher-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .voucher-item {
+      display: flex;
+      align-items: center;
+      max-height: 300px;
+
+      .voucher-image {
+        height: 100%;
+      }
+
+      .item-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

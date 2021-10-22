@@ -1,0 +1,77 @@
+{
+  "name": "tsup",
+  "version": "4.14.0",
+  "main": "dist/index.js",
+  "bin": {
+    "tsup": "dist/cli-default.js",
+    "tsup-node": "dist/cli-node.js"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "EGOIST",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/egoist/tsup.git"
+  },
+  "scripts": {
+    "build": "npm run tsup -- src/cli-*.ts src/index.ts src/rollup.ts --clean --dts-resolve",
+    "prepublishOnly": "npm run build",
+    "test": "npm run build:simple && jest",
+    "//": "Building without dts for speed",
+    "build:simple": "npm run tsup -- src/cli-*.ts src/index.ts src/rollup.ts --clean",
+    "tsup": "node -r sucrase/register src/cli-default.ts"
+  },
+  "dependencies": {
+    "cac": "^6.7.2",
+    "chalk": "^4.1.0",
+    "chokidar": "^3.5.1",
+    "debug": "^4.3.1",
+    "esbuild": "^0.12.9",
+    "execa": "^5.0.0",
+    "globby": "^11.0.3",
+    "joycon": "^3.0.1",
+    "postcss-load-config": "^3.0.1",
+    "resolve-from": "^5.0.0",
+    "rollup": "^2.56.1",
+    "sucrase": "^3.18.1",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.15",
+    "@rollup/plugin-json": "^4.1.0",
+    "@types/buble": "^0.19.2",
+    "@types/debug": "^4.1.5",
+    "@types/fs-extra": "^9.0.11",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.41",
+    "@types/resolve": "^1.20.0",
+    "buble": "^0.20.0",
+    "consola": "^2.15.3",
+    "fs-extra": "^9.1.0",
+    "jest": "^26.6.3",
+    "jju": "^1.4.0",
+    "postcss": "^8.2.10",
+    "postcss-simple-vars": "^6.0.3",
+    "prettier": "^2.2.1",
+    "resolve": "^1.20.0",
+    "rollup-plugin-dts": "^3.0.2",
+    "rollup-plugin-hashbang": "^2.2.2",
+    "string-argv": "^0.3.1",
+    "strip-json-comments": "^3.1.1",
+    "svelte": "3.37.0",
+    "ts-essentials": "^7.0.1",
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4",
+    "wait-for-expect": "^3.0.2"
+  },
+  "peerDependencies": {
+    "typescript": "^4.2.3"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
+}

@@ -1,11 +1,21 @@
 import { Button } from "antd";
+import { useQuery } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
 import { BiikeRouteModal } from "src/organisms/route-modal";
+import { routeQueryFns } from "src/services/api/route";
 import "./index.scss";
 
 interface BiikeRoutePageProps {}
 
 export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
+  const { data } = useQuery(
+    ["routes"],
+    () => routeQueryFns.routes({ page: 1, limit: 10 }),
+    {
+      onSuccess: (data) => console.log(data),
+    }
+  );
+
   const [isRouteModalVisible, toggleRouteModalVisible] = useToggle(false);
 
   const handleSubmitModal = (values: any, closeModalCallback?: () => void) => {

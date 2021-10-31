@@ -1,16 +1,16 @@
-.biike-area-page {
-  .biike-area-tools {
+.biike-station-page {
+  padding: 0 10px 0 10px;
+  .biike-station-tools {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
   }
 
-  .biike-area-content {
+  .biike-station-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
 
-    .area-item {
+    .station-item {
       display: flex;
       justify-content: space-between;
       align-items: center;

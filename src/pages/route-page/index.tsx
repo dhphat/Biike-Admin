@@ -1,3 +1,8 @@
+import {
+  AimOutlined,
+  EnvironmentOutlined,
+  MoreOutlined,
+} from "@ant-design/icons";
 import { Button } from "antd";
 import { useQuery } from "react-query";
 import { routeQueryFns } from "src/services/api/route";
@@ -22,13 +27,12 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
         {data?.data.map((route) => (
           <div className="route-item bg-white rounded px-8 py-4 ">
             <div className="item-details text-gray-500 ">
-              Từ
               <div className="route-name text-base font-bold">
-                {route.departureName}
+                <AimOutlined /> {route.departureName}
               </div>
-              Đến
+              <MoreOutlined />
               <div className="route-name text-base font-bold">
-                {route.destinationName}
+                <EnvironmentOutlined /> {route.destinationName}
               </div>
             </div>
             <div className="item-tools">

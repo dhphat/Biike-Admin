@@ -3,6 +3,8 @@ import { useQuery } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
 import { stationQueryFns } from "src/services/api/station";
 import { BiikeRouteModal } from "src/organisms/route-modal";
+import "./index.scss";
+import { EnvironmentOutlined } from "@ant-design/icons";
 
 interface BiikeStationPageProps {}
 
@@ -19,8 +21,8 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
   };
 
   return (
-    <div className="biike-area-page">
-      <div className="biike-area-tools mb-8">
+    <div className="biike-station-page">
+      <div className="biike-station-tools mb-8">
         <Button
           type="primary"
           className="rounded "
@@ -35,11 +37,17 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
         onOk={handleSubmitModal}
       />
 
-      <div className="biike-area-content">
+      <div className="biike-station-content">
         {data?.data.map((station) => (
-          <div className="area-item bg-white rounded px-8 py-4 ">
-            <div className="item-details text-gray-500 text-base font-bold">
-              {station.name}
+          <div className="station-item bg-white rounded px-8 py-4 ">
+            <div className="item-details text-gray-500 ">
+              <div className="route-name text-base font-bold">
+                {station.name}
+              </div>
+
+              <div className="route-address text-sm">
+                <EnvironmentOutlined /> {station.address}
+              </div>
             </div>
             <div className="item-tools">
               <Button type="primary" className="rounded">

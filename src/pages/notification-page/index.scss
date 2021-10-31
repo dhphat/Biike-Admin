@@ -1,0 +1,34 @@
+.biike-notification-page {
+  // height: 80%;
+  .biike-notification-list {
+    display: flex;
+    flex-direction: column;
+    .biike-notification-tools {
+      display: flex;
+      gap: 10px;
+      .tool-item {
+        min-width: 10rem;
+        .ant-select-selector {
+          border: 0px solid #d9d9d9 !important;
+        }
+      }
+    }
+    .biike-notification-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .item-details {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+  .biike-notification-create {
+    display: flex;
+    flex-direction: column;
+    .biike-notification-tools {
+      display: flex;
+      gap: 10px;
+    }
+  }
+}

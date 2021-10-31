@@ -14,32 +14,31 @@ function App() {
           {routes.map((route, index) => {
             const Layout = route.layout;
             const renderRoute = (Layout?: FunctionComponent) => {
-              if (route.type === "SINGLE_ROUTE") {
-                console.log("route", route.name);
+              const renderComponent = (
+                Component: FunctionComponent,
+                Layout?: FunctionComponent
+              ) => {
                 return Layout ? (
                   <Layout>
-                    <route.component />
+                    <Component />
                   </Layout>
                 ) : (
-                  <route.component />
+                  <Component />
                 );
+              };
+              if (route.type === "SINGLE_ROUTE") {
+                return renderComponent(route.component, Layout);
               }
-              return () => (
+              return (
                 <Switch>
-                  {route.nest.map((nest) => (
-                    <Route
-                      path={route.path}
-                      render={() =>
-                        Layout ? (
-                          <Layout>
-                            <nest.component />
-                          </Layout>
-                        ) : (
-                          nest.component
-                        )
-                      }
-                    />
-                  ))}
+                  {route.nest.map((nest) => {
+                    return (
+                      <Route
+                        path={route.path + nest.path}
+                        render={() => renderComponent(nest.component, Layout)}
+                      />
+                    );
+                  })}
                 </Switch>
               );
             };

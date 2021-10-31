@@ -11,6 +11,18 @@
   .biike-layout-breadcrumb-item {
     cursor: pointer;
   }
+  .biike-layout-content {
+    overflow-y: scroll;
+    height: calc(100vh - 64px - 40px);
+  }
+
+  .biike-layout-footer {
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .ant-layout-sider {
     background-color: var(--primary-color) !important;

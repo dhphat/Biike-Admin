@@ -11,6 +11,8 @@ import { BiikeBikePage } from "src/pages/bike-page";
 import { BiikeWalletPage } from "src/pages/wallet-page";
 import { BiikeVoucherPage } from "src/pages/voucher-page";
 import { BiikeAdminPage } from "src/pages/admin-page";
+import { BiikeNotificationPage } from "src/pages/notification-page";
+import { BiikeStationPage } from "src/pages/station-page";
 
 interface BiikeRoute {
   name?: string;
@@ -56,6 +58,18 @@ export const routes: BiikeMapRoute[] = [
     layout: BiikeDefaultLayout,
     component: BiikeHomePage,
     disabled: true,
+  },
+  {
+    type: "NEST_ROUTE",
+    name: "Di chuyển",
+    path: "/moving",
+    isPrivate: true,
+    layout: BiikeDefaultLayout,
+    nest: [
+      { name: "Tram", path: "/station", component: BiikeStationPage },
+      { name: "Route", path: "/route", component: BiikeStationPage },
+      { name: "Khu vuc", path: "/area", component: BiikeStationPage },
+    ],
   },
   {
     type: "SINGLE_ROUTE",
@@ -120,6 +134,14 @@ export const routes: BiikeMapRoute[] = [
     isPrivate: true,
     layout: BiikeDefaultLayout,
     component: BiikeVoucherPage,
+  },
+  {
+    type: "SINGLE_ROUTE",
+    name: "Notification",
+    path: "/notification",
+    isPrivate: true,
+    layout: BiikeDefaultLayout,
+    component: BiikeNotificationPage,
   },
   {
     type: "SINGLE_ROUTE",

@@ -1,4 +1,4 @@
-import { fetchApis } from "..";
+import { fetchApis, PaginationQueryResponse } from "..";
 
 interface RoutesParams {
   page: number;
@@ -6,6 +6,15 @@ interface RoutesParams {
 }
 
 export const routeQueryFns = {
-  routes: (params: RoutesParams): Promise<any> =>
+  routes: (params: RoutesParams): Promise<RouteResponse> =>
     fetchApis.GET("/routes", params),
 };
+
+export interface Route {
+  routeId: number;
+  departureId: number;
+  destinationId: number;
+  defaultPoint: number;
+}
+
+export interface RouteResponse extends PaginationQueryResponse<Array<Route>> {}

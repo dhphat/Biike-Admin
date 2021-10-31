@@ -1,11 +1,4 @@
 import { Avatar, Breadcrumb, Layout, Menu } from "antd";
-import {
-  PieChartOutlined,
-  DesktopOutlined,
-  UserOutlined,
-  TeamOutlined,
-  FileOutlined,
-} from "@ant-design/icons";
 import { FunctionComponent, useEffect, useState } from "react";
 import "./index.scss";
 import { Link, useHistory, useLocation } from "react-router-dom";
@@ -24,7 +17,6 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
 
   useEffect(() => {
     const paths = location.pathname.split("/").filter((path) => !!path);
-    console.log(children);
     setPaths(paths);
   }, [location]);
 
@@ -40,7 +32,7 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
     .map((route) =>
       route.type === "NEST_ROUTE"
         ? route.nest.map((nest) => route.path + nest.path)
-        : []
+        : route.path
     )
     .flat(1)
     .find((path) => location.pathname.indexOf(path) === 0);
@@ -75,7 +67,7 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
                 );
               }
               return (
-                <Menu.SubMenu key={route.path} title="User">
+                <Menu.SubMenu key={route.path} title={route.name}>
                   {route.nest.map((nest) => (
                     <Menu.Item key={route.path + nest.path}>
                       {route.disabled ? (
@@ -116,7 +108,7 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
           </div>
         </Layout.Header>
         <Layout className="site-layout">
-          <Layout.Content style={{ margin: "0 16px" }}>
+          <Layout.Content className="biike-layout-content">
             <div
               className="site-layout-background"
               style={{ padding: 24, minHeight: 360 }}
@@ -124,7 +116,7 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
               {children}
             </div>
           </Layout.Content>
-          <Layout.Footer style={{ textAlign: "center" }}>
+          <Layout.Footer className="biike-layout-footer">
             Biiké ©2021 Created by Biiké Team
           </Layout.Footer>
         </Layout>

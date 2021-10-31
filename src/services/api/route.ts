@@ -1,4 +1,4 @@
-import { fetchApis, PaginationQueryResponse } from "..";
+import { fetchApis, PaginationQueryResponse, QueryResponse } from "..";
 
 interface RoutesParams {
   page: number;
@@ -6,8 +6,10 @@ interface RoutesParams {
 }
 
 export const routeQueryFns = {
-  routes: (params: RoutesParams): Promise<RouteResponse> =>
+  routes: (params: RoutesParams): Promise<RoutesResponse> =>
     fetchApis.GET("/routes", params),
+
+  route: (id: number): Promise<RouteResponse> => fetchApis.GET(`/route/${id}`),
 };
 
 export interface Route {
@@ -15,6 +17,13 @@ export interface Route {
   departureId: number;
   destinationId: number;
   defaultPoint: number;
+  areaId: number;
+  departureName: string;
+  destinationName: string;
+  createdDate: string;
+  isDeleted: boolean;
 }
 
-export interface RouteResponse extends PaginationQueryResponse<Array<Route>> {}
+export interface RoutesResponse extends PaginationQueryResponse<Array<Route>> {}
+
+export interface RouteResponse extends QueryResponse<Route> {}

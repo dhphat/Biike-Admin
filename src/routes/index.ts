@@ -5,7 +5,7 @@ import { BiikeHomePage } from "src/pages/dashboard-page";
 import { BiikeLoginPage } from "src/pages/login-page";
 import { BiikeRoutePage } from "src/pages/route-page";
 import { BiikeUserPage } from "src/pages/user-page";
-import { BiikeHelpCenterPage } from "src/pages/helpcenter-page";
+// import { BiikeHelpCenterPage } from "src/pages/helpcenter-page";
 import { BiikeFeedbackPage } from "src/pages/feedback-page";
 import { BiikeBikePage } from "src/pages/bike-page";
 import { BiikeWalletPage } from "src/pages/wallet-page";
@@ -13,6 +13,8 @@ import { BiikeVoucherPage } from "src/pages/voucher-page";
 import { BiikeAdminPage } from "src/pages/admin-page";
 import { BiikeNotificationPage } from "src/pages/notification-page";
 import { BiikeStationPage } from "src/pages/station-page";
+import { BiikeTripPage } from "src/pages/trip-page";
+import { BiikeAdsPage } from "src/pages/ads-page";
 
 interface BiikeRoute {
   name?: string;
@@ -66,86 +68,80 @@ export const routes: BiikeMapRoute[] = [
     isPrivate: true,
     layout: BiikeDefaultLayout,
     nest: [
-      { name: "Tram", path: "/station", component: BiikeStationPage },
-      { name: "Route", path: "/route", component: BiikeStationPage },
-      { name: "Khu vuc", path: "/area", component: BiikeStationPage },
+      { name: "Trạm", path: "/station", component: BiikeStationPage },
+      { name: "Tuyến", path: "/route", component: BiikeRoutePage },
+      { name: "Khu vực", path: "/area", component: BiikeAreaPage },
+      { name: "Chuyến", path: "/trip", component: BiikeTripPage },
     ],
   },
+  // {
+  //   type: "SINGLE_ROUTE",
+  //   name: "Chuyến/Trip",
+  //   path: "/trip",
+  //   isPrivate: true,
+  //   layout: BiikeDefaultLayout,
+  //   component: BiikeTripPage,
+  // },
+  // {
+  //   type: "SINGLE_ROUTE",
+  //   name: "Khu vực/Area",
+  //   path: "/area",
+  //   isPrivate: true,
+  //   layout: BiikeDefaultLayout,
+  //   component: BiikeAreaPage,
+  // },
+
   {
-    type: "SINGLE_ROUTE",
-    name: "Trạm/Route",
-    path: "/route",
+    type: "NEST_ROUTE",
+    name: "Người dùng",
+    path: "/app-user",
     isPrivate: true,
     layout: BiikeDefaultLayout,
-    component: BiikeRoutePage,
+    nest: [
+      { name: "Biker & Keer", path: "/user", component: BiikeUserPage },
+      { name: "Xe", path: "/bike", component: BiikeBikePage },
+      { name: "Đánh giá", path: "/feedback", component: BiikeFeedbackPage },
+      {
+        name: "Thông báo",
+        path: "/notification",
+        component: BiikeNotificationPage,
+      },
+    ],
   },
+
   {
-    type: "SINGLE_ROUTE",
-    name: "Khu vực/Area",
-    path: "/area",
+    type: "NEST_ROUTE",
+    name: "Ưu đãi & Quảng cáo",
+    path: "/voucher-and-ads",
     isPrivate: true,
     layout: BiikeDefaultLayout,
-    component: BiikeAreaPage,
+    nest: [
+      { name: "Ưu đãi", path: "/voucher", component: BiikeVoucherPage },
+      { name: "Quảng cáo", path: "/ads", component: BiikeAdsPage },
+    ],
   },
+
   {
     type: "SINGLE_ROUTE",
-    name: "Người dùng/User",
-    path: "/user",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeUserPage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Help Center",
-    path: "/helpcenter",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeHelpCenterPage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Feedback",
-    path: "/feedback",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeFeedbackPage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Bike",
-    path: "/bike",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeBikePage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Wallet",
+    name: "Giao dịch ví",
     path: "/wallet",
     isPrivate: true,
     layout: BiikeDefaultLayout,
     component: BiikeWalletPage,
   },
+
+  // {
+  //   type: "SINGLE_ROUTE",
+  //   name: "Help Center",
+  //   path: "/helpcenter",
+  //   isPrivate: true,
+  //   layout: BiikeDefaultLayout,
+  //   component: BiikeHelpCenterPage,
+  // },
+
   {
     type: "SINGLE_ROUTE",
-    name: "Voucher",
-    path: "/voucher",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeVoucherPage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Notification",
-    path: "/notification",
-    isPrivate: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeNotificationPage,
-  },
-  {
-    type: "SINGLE_ROUTE",
-    name: "Admin",
+    name: "Quản trị viên",
     path: "/admin",
     isPrivate: true,
     layout: BiikeDefaultLayout,

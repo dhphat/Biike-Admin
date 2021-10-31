@@ -1,0 +1,27 @@
+.biike-trip-page {
+  padding: 0 10px 0 10px;
+  .biike-trip-tools {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .biike-trip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .route-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

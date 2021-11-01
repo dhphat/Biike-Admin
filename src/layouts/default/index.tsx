@@ -1,8 +1,9 @@
-import { Avatar, Breadcrumb, Layout, Menu } from "antd";
+import { Avatar, Breadcrumb, Dropdown, Layout, Menu } from "antd";
 import { FunctionComponent, useEffect, useState } from "react";
 import "./index.scss";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routes } from "src/routes";
+import { useAuth } from "src/services/AuthProvider";
 
 interface BiikeDefaultLayoutProps {}
 
@@ -11,8 +12,10 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
+  const { user, logout } = useAuth();
   const history = useHistory();
   const location = useLocation();
+
   const [paths, setPaths] = useState<string[]>([]);
 
   useEffect(() => {
@@ -53,7 +56,7 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
           mode="inline"
         >
           {routes
-            .filter((route) => route.isPrivate)
+            .filter((route) => route.privateOnly)
             .map((route) => {
               if (route.type === "SINGLE_ROUTE") {
                 return (
@@ -95,10 +98,19 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
                 Admin
               </span>
               <span className="text-lg text-gray-500 tracking-tighter">
-                Do Huu Phat
+                {user?.userFullname}
               </span>
             </div>
-            <Avatar size="large" src={require("../../assets/avatar.png")} />
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={logout}>Logout</Menu.Item>
+                </Menu>
+              }
+              placement="bottomRight"
+            >
+              <Avatar size="large" src={require("../../assets/avatar.png")} />
+            </Dropdown>
             {/* <Avatar
               style={{ backgroundColor: "orange", verticalAlign: "middle" }}
               size="large"

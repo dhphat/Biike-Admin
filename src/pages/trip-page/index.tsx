@@ -50,14 +50,14 @@ export const BiikeTripPage = (props: BiikeTripPageProps) => {
     },
   ];
 
-  for (let i = 0; i < 10; i++) {
-    data.push({
-      key: i,
-      name: `Edward King ${i}`,
-      age: 32,
-      address: `London, Park Lane no. ${i}`,
-    });
-  }
+  // for (let i = 0; i < 10; i++) {
+  //   data.push({
+  //     key: i,
+  //     name: `Edward King ${i}`,
+  //     age: 32,
+  //     address: `London, Park Lane no. ${i}`,
+  //   });
+  // }
 
   class App extends React.Component {
     state = {
@@ -106,7 +106,7 @@ export const BiikeTripPage = (props: BiikeTripPageProps) => {
           <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data}
+            // dataSource={data}
           />
         </div>
       );

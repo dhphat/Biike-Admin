@@ -4,6 +4,7 @@ const baseUrl = "https://biike-api.azurewebsites.net/api/biike/v1";
 
 const getHeaders = () => {
   const headers = new Headers();
+  headers.append("Content-Type", "application/json; charset=utf-8");
   const stringLocalUser = localStorage.getItem("local_user") || "";
   try {
     const objectLocalUser: LocalUser = JSON.parse(stringLocalUser);

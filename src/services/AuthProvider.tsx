@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { authQueryFns } from "./api/auth";
 import { User } from "./api/user";
 
@@ -17,6 +17,7 @@ export interface LocalUser {
 
 interface AuthState {
   user?: User;
+  isAuthenticating?: boolean;
   signin: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -29,6 +30,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: FunctionComponent = ({ children }) => {
   const [authUser, setAuthUser] = useState<User>();
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
 
   const loginMutation = useMutation(authQueryFns.login);
   const verifyUserMutation = useMutation(authQueryFns.verifyUser);
@@ -43,16 +45,36 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
           setAuthUser(res.data);
         })
         .catch(() => {
-          throw new Error("");
-        });
+          logout();
+        })
+        .finally(() => setIsAuthenticating(false));
     } catch (error) {
-      setAuthUser(undefined);
-      localStorage.removeItem(localUserKey);
+      setIsAuthenticating(false);
+      logout();
     }
   }, []);
 
   const signin = async (email: string, password: string) => {
-    const { data } = loginMutation.mutateAsync();
+    const loginResponse = await loginMutation.mutateAsync({ email, password });
+    if (loginResponse.data) {
+      localStorage.setItem(
+        localUserKey,
+        JSON.stringify({
+          id: loginResponse.data.userId,
+          token: loginResponse.data.token,
+        })
+      );
+      const userResponse = await verifyUserMutation.mutateAsync(
+        loginResponse.data.userId
+      );
+      if (userResponse.data) {
+        setAuthUser(userResponse.data);
+        return Promise.resolve(true);
+      } else {
+        logout();
+      }
+    }
+    return Promise.resolve(false);
   };
 
   const logout = () => {
@@ -61,7 +83,9 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user: authUser, signin, logout }}>
+    <AuthContext.Provider
+      value={{ user: authUser, isAuthenticating, signin, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

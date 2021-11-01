@@ -19,8 +19,10 @@ import { BiikeAdsPage } from "src/pages/ads-page";
 interface BiikeRoute {
   name?: string;
   path: string;
-  isPrivate?: boolean;
+  privateOnly?: boolean;
+  publicOnly?: boolean;
   disabled?: boolean;
+  exact?: boolean;
 }
 
 interface BiikeSingleRoute extends BiikeRoute {
@@ -49,14 +51,23 @@ export const routes: BiikeMapRoute[] = [
   {
     type: "SINGLE_ROUTE",
     name: "Login",
+    path: "/",
+    publicOnly: true,
+    exact: true,
+    component: BiikeLoginPage,
+  },
+  {
+    type: "SINGLE_ROUTE",
+    name: "Login",
     path: "/login",
+    publicOnly: true,
     component: BiikeLoginPage,
   },
   {
     type: "SINGLE_ROUTE",
     name: "Dashboard",
     path: "/dashboard",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     component: BiikeHomePage,
     disabled: true,
@@ -65,7 +76,7 @@ export const routes: BiikeMapRoute[] = [
     type: "NEST_ROUTE",
     name: "Di chuyển",
     path: "/moving",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     nest: [
       { name: "Trạm", path: "/station", component: BiikeStationPage },
@@ -95,7 +106,7 @@ export const routes: BiikeMapRoute[] = [
     type: "NEST_ROUTE",
     name: "Người dùng",
     path: "/app-user",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     nest: [
       { name: "Biker & Keer", path: "/user", component: BiikeUserPage },
@@ -113,7 +124,7 @@ export const routes: BiikeMapRoute[] = [
     type: "NEST_ROUTE",
     name: "Ưu đãi & Quảng cáo",
     path: "/voucher-and-ads",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     nest: [
       { name: "Ưu đãi", path: "/voucher", component: BiikeVoucherPage },
@@ -125,7 +136,7 @@ export const routes: BiikeMapRoute[] = [
     type: "SINGLE_ROUTE",
     name: "Giao dịch ví",
     path: "/wallet",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     component: BiikeWalletPage,
   },
@@ -143,7 +154,7 @@ export const routes: BiikeMapRoute[] = [
     type: "SINGLE_ROUTE",
     name: "Quản trị viên",
     path: "/admin",
-    isPrivate: true,
+    privateOnly: true,
     layout: BiikeDefaultLayout,
     component: BiikeAdminPage,
   },

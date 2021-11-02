@@ -6,7 +6,11 @@ import {
 import { Button } from "antd";
 import { useQuery } from "react-query";
 import { routeQueryFns } from "src/services/api/route";
+import { BiikeRouteModal } from "src/organisms/route-modal";
+import { BiikeRouteDetailModal } from "src/organisms/route-detail-modal";
+
 import "./index.scss";
+import { useToggle } from "src/hooks/useToggle";
 
 interface BiikeRoutePageProps {}
 
@@ -15,13 +19,39 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
     routeQueryFns.routes({ page: 1, limit: 10 })
   );
 
+  const [isRouteModalVisible, toggleRouteModalVisible] = useToggle(false);
+  const [isRouteDetailModalVisible, toggleRouteDetailModalVisible] =
+    useToggle(false);
+
+  const handleSubmitModal = (values: any, closeModalCallback?: () => void) => {
+    console.log(values);
+    closeModalCallback?.();
+  };
+
   return (
     <div className="biike-route-page">
       <div className="biike-route-tools mb-8">
-        <Button type="primary" className="rounded ">
+        <Button
+          type="primary"
+          className="rounded "
+          onClick={toggleRouteModalVisible}
+        >
           Thêm tuyến
         </Button>
       </div>
+
+      <BiikeRouteModal
+        visibleManage={[isRouteModalVisible, toggleRouteModalVisible]}
+        onOk={handleSubmitModal}
+      />
+
+      <BiikeRouteDetailModal
+        visibleManage={[
+          isRouteDetailModalVisible,
+          toggleRouteDetailModalVisible,
+        ]}
+        onOk={handleSubmitModal}
+      />
 
       <div className="biike-route-content">
         {data?.data.map((route) => (
@@ -36,11 +66,12 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
               </div>
             </div>
             <div className="item-tools">
-              <Button type="primary" className="rounded">
+              <Button
+                type="primary"
+                className="rounded"
+                onClick={toggleRouteDetailModalVisible}
+              >
                 Xem
-              </Button>
-              <Button type="primary" className="rounded">
-                Sửa
               </Button>
               <Button type="primary" danger className="rounded">
                 Xóa

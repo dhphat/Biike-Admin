@@ -1,5 +1,5 @@
 import { CaretDownOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Radio, Select } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Radio, Select } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import "./index.scss";
 
@@ -33,29 +33,6 @@ export const BiikeRouteModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="route-modal-content">
-          <Form.Item name="ten_tram">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tên trạm</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-          <Form.Item name="toa_do">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tọa độ</span>
-              <div className="flex flex-column mt-2">
-                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1" />
-                <Button type="primary" className="rounded ml-1">
-                  Chọn trên bản đồ
-                </Button>
-              </div>
-            </div>
-          </Form.Item>
-          <Form.Item name="dia_chi">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Địa chỉ</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-4 text-blue-gray-500" />
-            </div>
-          </Form.Item>
           <Form.Item name="khu_vuc">
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Khu vực</span>
@@ -67,6 +44,44 @@ export const BiikeRouteModal = ({
               />
             </div>
           </Form.Item>
+
+          <Form.Item name="tram_dau">
+            <div className=" text-sm font-medium ">
+              <span className="text-gray-500">Trạm đầu</span>
+              <Select
+                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+                defaultValue="1"
+                options={[{ label: "Trường Đại học FPT", value: "1" }]}
+                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+              />
+            </div>
+          </Form.Item>
+
+          <Form.Item name="tram_cuoi">
+            <div className=" text-sm font-medium ">
+              <span className="text-gray-500">Trạm cuối</span>
+              <Select
+                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+                defaultValue="1"
+                options={[{ label: "Chung cư SKY 9", value: "1" }]}
+                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+              />
+            </div>
+          </Form.Item>
+
+          <Form.Item name="diem_mac_dinh">
+            <div className=" text-sm font-medium ">
+              <span className="text-gray-500">Điểm mặc định</span>
+              <br />
+              <InputNumber
+                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
+                min="1"
+                max="100"
+                defaultValue="0"
+              />
+            </div>
+          </Form.Item>
+
           <Form.Item name="hien_thi">
             <div className="biike-modal-display text-sm font-medium ">
               <span className="text-gray-500">Hiển thị</span>

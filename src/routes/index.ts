@@ -70,7 +70,7 @@ export const routes: BiikeMapRoute[] = [
     privateOnly: true,
     layout: BiikeDefaultLayout,
     component: BiikeHomePage,
-    disabled: true,
+    // disabled: true,
   },
   {
     type: "NEST_ROUTE",

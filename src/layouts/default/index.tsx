@@ -109,7 +109,8 @@ export const BiikeDefaultLayout: FunctionComponent<BiikeDefaultLayoutProps> = ({
               }
               placement="bottomRight"
             >
-              <Avatar size="large" src={require("../../assets/avatar.png")} />
+              {/* <Avatar size="large" src={require("../../assets/avatar.png")} /> */}
+              <Avatar size="large" src={user?.avatar} />
             </Dropdown>
             {/* <Avatar
               style={{ backgroundColor: "orange", verticalAlign: "middle" }}

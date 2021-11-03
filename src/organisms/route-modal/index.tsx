@@ -1,5 +1,5 @@
 import { CaretDownOutlined } from "@ant-design/icons";
-import { Button, Form, Input, InputNumber, Modal, Radio, Select } from "antd";
+import { Button, Form, InputNumber, Modal, Select } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import "./index.scss";
 
@@ -33,7 +33,7 @@ export const BiikeRouteModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="route-modal-content">
-          <Form.Item name="khu_vuc">
+          <Form.Item name="areaId">
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Khu vực</span>
               <Select
@@ -45,7 +45,7 @@ export const BiikeRouteModal = ({
             </div>
           </Form.Item>
 
-          <Form.Item name="tram_dau">
+          <Form.Item name="departureName">
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Trạm đầu</span>
               <Select
@@ -57,7 +57,7 @@ export const BiikeRouteModal = ({
             </div>
           </Form.Item>
 
-          <Form.Item name="tram_cuoi">
+          <Form.Item name="destinationName">
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Trạm cuối</span>
               <Select
@@ -69,7 +69,7 @@ export const BiikeRouteModal = ({
             </div>
           </Form.Item>
 
-          <Form.Item name="diem_mac_dinh">
+          <Form.Item name="defaultPoint">
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Điểm mặc định</span>
               <br />
@@ -82,23 +82,10 @@ export const BiikeRouteModal = ({
             </div>
           </Form.Item>
 
-          <Form.Item name="hien_thi">
-            <div className="biike-modal-display text-sm font-medium ">
-              <span className="text-gray-500">Hiển thị</span>
-              <Radio.Group
-                options={[
-                  { label: "Bật", value: "on" },
-                  { label: "Tắt", value: "off" },
-                ]}
-                size="small"
-                className="mt-1 text-red-500"
-              />
-            </div>
-          </Form.Item>
           <div className="route-modal-tools">
             <Button onClick={handleCloseModal}>Hủy</Button>
             <Button type="primary" className="rounded" htmlType="submit">
-              Thêm trạm
+              Thêm tuyến
             </Button>
           </div>
         </div>

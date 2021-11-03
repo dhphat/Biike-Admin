@@ -9,7 +9,16 @@ export const userQueryFns = {
   users: (params: UsersParams): Promise<UsersResponse> =>
     fetchApis.GET("/users", params),
   user: (id: number): Promise<UserResponse> => fetchApis.GET(`/user/${id}`),
+  deleteUser: (id: number) => fetchApis.DELETE(`/users/${id}`),
 };
+
+export interface UserAddress {
+  addressName: string;
+  addressDetail: string;
+  addressCoordinate: string;
+  note: string;
+  isDefault: boolean;
+}
 
 export interface User {
   userId: number;
@@ -26,6 +35,7 @@ export interface User {
   birthDate: string;
   createdDate: string;
   isDeleted: boolean;
+  userAddresses: Array<UserAddress>;
 }
 
 export interface UsersResponse extends PaginationQueryResponse<Array<User>> {}

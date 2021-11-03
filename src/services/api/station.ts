@@ -10,6 +10,11 @@ export const stationQueryFns = {
     fetchApis.GET("/stations", params),
   station: (id: number): Promise<StationResponse> =>
     fetchApis.GET(`/station/${id}`),
+  createStation: (body: object): Promise<StationResponse> =>
+    fetchApis.POST(`/stations`, body),
+  updateStation: ([id, body]: [number, object]): Promise<StationResponse> =>
+    fetchApis.PUT(`/stations/${id}`, body),
+  deleteStation: (id: number) => fetchApis.DELETE(`/stations/${id}`),
 };
 
 export interface Station {
@@ -18,6 +23,8 @@ export interface Station {
   name: string;
   address: string;
   coordinate: string;
+  createdDate: string;
+  isDeleted: boolean;
 }
 
 export interface StationsResponse

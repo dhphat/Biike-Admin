@@ -1,26 +1,37 @@
 import { CaretDownOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Radio, Select } from "antd";
-import { useToggle } from "src/hooks/useToggle";
+import { Button, Form, Input, Modal, Select } from "antd";
+import { useEffect } from "react";
+import { Station } from "src/services/api/station";
 import "./index.scss";
 
 interface BiikeStationDetailModalProps {
-  visibleManage: ReturnType<typeof useToggle>;
-  onOk?: (data: any, closeModalCallback?: () => void) => void;
+  visibleManage: [boolean, (openID: number) => void];
+  station: Station;
+  onOk?: (id: number, data: any, closeModalCallback?: () => void) => void;
+  isUpdating?: boolean;
 }
 
 export const BiikeStationDetailModal = ({
   visibleManage,
+  station,
   onOk,
+  isUpdating,
 }: BiikeStationDetailModalProps) => {
   const [visible, toggleVisible] = visibleManage;
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue(station);
+    }
+  }, [visible]);
+
   const handleCloseModal = () => {
-    toggleVisible(false);
+    toggleVisible(station.stationId);
   };
 
   const handleSubmitForm = (values: any) => {
-    onOk?.(values, handleCloseModal);
+    onOk?.(station.stationId, values, handleCloseModal);
   };
 
   return (
@@ -33,58 +44,68 @@ export const BiikeStationDetailModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="station-detail-modal-content">
-          <Form.Item name="ten_tram">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tên trạm</span>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Thời gian tạo</span>
+            <Form.Item name="createdDate">
+              <Input
+                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
+                disabled
+              />
+            </Form.Item>
+          </div>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Tên trạm</span>
+            <Form.Item name="name">
               <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+            </Form.Item>
+          </div>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Tọa độ</span>
+            <div className="flex flex-column mt-2">
+              <Form.Item name="coordinate">
+                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1 w-full" />
+              </Form.Item>
+              <Button
+                type="primary"
+                className="rounded ml-1"
+                href="https://www.google.com/maps/"
+                target="_blank"
+              >
+                Bản đồ
+              </Button>
             </div>
-          </Form.Item>
-          <Form.Item name="toa_do">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tọa độ</span>
-              <div className="flex flex-column mt-2">
-                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1" />
-                <Button type="primary" className="rounded ml-1">
-                  Chọn trên bản đồ
-                </Button>
-              </div>
-            </div>
-          </Form.Item>
-          <Form.Item name="dia_chi">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Địa chỉ</span>
+          </div>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Địa chỉ</span>
+            <Form.Item name="address">
               <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-4 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-          <Form.Item name="khu_vuc">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Khu vực</span>
+            </Form.Item>
+          </div>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Khu vực</span>
+            <Form.Item name="areaId">
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                defaultValue="1"
-                options={[{ label: "Trường Đại học FPT", value: "1" }]}
+                // defaultValue="1"
+                options={[{ label: "Trường Đại học FPT", value: 1 }]}
                 className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
               />
-            </div>
-          </Form.Item>
-          <Form.Item name="hien_thi">
-            <div className="biike-modal-display text-sm font-medium ">
-              <span className="text-gray-500">Hiển thị</span>
-              <Radio.Group
-                options={[
-                  { label: "Bật", value: "on" },
-                  { label: "Tắt", value: "off" },
-                ]}
-                size="small"
-                className="mt-1 text-red-500"
-              />
-            </div>
-          </Form.Item>
+            </Form.Item>
+          </div>
+
           <div className="station-detail-modal-tools">
-            <Button onClick={handleCloseModal}>Hủy</Button>
-            <Button type="primary" className="rounded" htmlType="submit">
-              Thêm trạm
-            </Button>
+            <Button onClick={handleCloseModal}>Thoát</Button>
+
+            {station.isDeleted === false && (
+              <Button
+                type="primary"
+                className="rounded"
+                htmlType="submit"
+                loading={isUpdating}
+              >
+                Cập nhật
+              </Button>
+            )}
           </div>
         </div>
       </Form>

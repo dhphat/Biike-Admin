@@ -1,4 +1,8 @@
 .biike-dashboard-page {
+  .biike-dashboard-tools {
+    display: flex;
+    justify-content: flex-end;
+  }
   .biike-dashboard-content {
     display: flex;
     gap: 20px;

@@ -1,4 +1,4 @@
-import { Select, Button } from "antd";
+import { Select, Button, Tag, Rate } from "antd";
 import {
   CaretDownOutlined,
   CheckCircleOutlined,
@@ -7,14 +7,38 @@ import {
 } from "@ant-design/icons";
 import "./index.scss";
 import { useQuery } from "react-query";
-import { feedbackQueryFns } from "src/services/api/feedback";
+import { useState } from "react";
+import { Feedback, feedbackQueryFns } from "src/services/api/feedback";
+import { BiikeFeedbackDetailModal } from "src/organisms/feedback-detail-modal";
+
+interface FeedbackDetailModal {
+  openId: number;
+  data?: Feedback;
+}
 
 interface BiikeFeedBackPageProps {}
 
 export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
-  const { data, isFetching } = useQuery(["feedbacks"], () =>
+  const { data, isFetching, refetch } = useQuery(["feedbacks"], () =>
     feedbackQueryFns.feedbacks({ page: 1, limit: 10 })
   );
+
+  // view
+  const [feedbackDetailModal, setFeedbackDetailModal] =
+    useState<FeedbackDetailModal>({
+      openId: -1,
+    });
+
+  const toggleFeedbackDetailModalVisible = (openId: number) => {
+    setFeedbackDetailModal((prev) => ({
+      ...prev,
+      openId: prev.openId === openId ? -1 : openId,
+    }));
+  };
+
+  const openFeedbackDetailModal = (data: Feedback) => {
+    setFeedbackDetailModal({ openId: data.feedbackId, data });
+  };
 
   return (
     <div className="biike-feedback-page px-4">
@@ -39,26 +63,41 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
               <div className="item-details text-gray-500 ">
                 <div className="feedback-name text-base ">
                   <span className="font-bold">User {feedback.userId}</span> đánh
-                  giá <span className="font-bold">{feedback.tripStar} sao</span>
+                  giá{" "}
+                  <span>
+                    <Rate
+                      className="text-sm"
+                      disabled
+                      defaultValue={feedback.tripStar}
+                    />
+                  </span>
                 </div>
-                <span className="font-bold">
-                  <CheckCircleOutlined /> {feedback.criteria}
-                </span>
+                <Tag color="processing">{feedback.criteria}</Tag>
+
                 <div className="feedback-address text-sm">
                   <CommentOutlined /> {feedback.feedbackContent}
                 </div>
               </div>
             </div>
             <div className="item-tools">
-              <Button type="primary" className="rounded">
+              <Button
+                type="primary"
+                className="rounded"
+                onClick={() => openFeedbackDetailModal(feedback)}
+              >
                 Xem
               </Button>
-              <Button type="primary" className="rounded">
-                Sửa
-              </Button>
-              <Button type="primary" danger className="rounded">
+
+              <BiikeFeedbackDetailModal
+                visibleManage={[
+                  feedbackDetailModal.openId === feedback.userId,
+                  toggleFeedbackDetailModalVisible,
+                ]}
+                feedback={feedback}
+              />
+              {/* <Button type="primary" danger className="rounded">
                 Xóa
-              </Button>
+              </Button> */}
             </div>
           </div>
         ))}

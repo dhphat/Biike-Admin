@@ -1,6 +1,7 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Button, Form, InputNumber, Modal, Select } from "antd";
 import { useToggle } from "src/hooks/useToggle";
+import { Station, stationQueryFns } from "src/services/api/station";
 import "./index.scss";
 
 interface BiikeRouteModalProps {
@@ -12,6 +13,10 @@ export const BiikeRouteModal = ({
   visibleManage,
   onOk,
 }: BiikeRouteModalProps) => {
+  // const { data, isFetching, refetch } = useQuery(["stations"], () =>
+  //   stationQueryFns.stations({ page: 1, limit: 10 })
+  // );
+
   const [visible, toggleVisible] = visibleManage;
   const [form] = Form.useForm();
 

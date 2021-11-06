@@ -9,6 +9,7 @@ export const bikeQueryFns = {
   bikes: (params: BikesParams): Promise<BikesResponse> =>
     fetchApis.GET("/bikes", params),
   bike: (id: number): Promise<BikeResponse> => fetchApis.GET(`/bike/${id}`),
+  // deleteBike: (id: number) => fetchApis.DELETE(`/bikes/${id}`),
 };
 
 export interface Bike {

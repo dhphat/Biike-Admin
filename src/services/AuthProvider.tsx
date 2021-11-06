@@ -1,3 +1,4 @@
+import { message } from "antd";
 import {
   createContext,
   FunctionComponent,
@@ -55,17 +56,37 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   }, []);
 
   const signin = async (email: string, password: string) => {
-    const loginResponse = await loginMutation.mutateAsync({ email, password });
+    const loginResponse = await loginMutation.mutateAsync(
+      {
+        email,
+        password,
+        isAdmin: true,
+      },
+      {
+        onError: () => {
+          message.error({
+            content: "Your email/password does not match!",
+          });
+        },
+      }
+    );
+
     if (loginResponse.data) {
       localStorage.setItem(
         localUserKey,
         JSON.stringify({
           id: loginResponse.data.userId,
-          token: loginResponse.data.token,
+          token: loginResponse.data.idToken,
         })
       );
+
       const userResponse = await verifyUserMutation.mutateAsync(
-        loginResponse.data.userId
+        loginResponse.data.userId,
+        {
+          onError: (error) => {
+            console.log(error);
+          },
+        }
       );
       if (userResponse.data) {
         setAuthUser(userResponse.data);

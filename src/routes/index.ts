@@ -72,6 +72,24 @@ export const routes: BiikeMapRoute[] = [
     component: BiikeHomePage,
     // disabled: true,
   },
+
+  {
+    type: "SINGLE_ROUTE",
+    name: "Chuyến",
+    path: "/trip",
+    privateOnly: true,
+    layout: BiikeDefaultLayout,
+    component: BiikeTripPage,
+    // disabled: true,
+  },
+  {
+    type: "SINGLE_ROUTE",
+    name: "Giao dịch ví",
+    path: "/wallet",
+    privateOnly: true,
+    layout: BiikeDefaultLayout,
+    component: BiikeWalletPage,
+  },
   {
     type: "NEST_ROUTE",
     name: "Di chuyển",
@@ -82,7 +100,6 @@ export const routes: BiikeMapRoute[] = [
       { name: "Trạm", path: "/station", component: BiikeStationPage },
       { name: "Tuyến", path: "/route", component: BiikeRoutePage },
       { name: "Khu vực", path: "/area", component: BiikeAreaPage },
-      { name: "Chuyến", path: "/trip", component: BiikeTripPage },
     ],
   },
   // {
@@ -130,15 +147,6 @@ export const routes: BiikeMapRoute[] = [
       { name: "Ưu đãi", path: "/voucher", component: BiikeVoucherPage },
       { name: "Quảng cáo", path: "/ads", component: BiikeAdsPage },
     ],
-  },
-
-  {
-    type: "SINGLE_ROUTE",
-    name: "Giao dịch ví",
-    path: "/wallet",
-    privateOnly: true,
-    layout: BiikeDefaultLayout,
-    component: BiikeWalletPage,
   },
 
   // {

@@ -29,6 +29,7 @@ export const BiikeLoginPage = (props: BiikeLoginPageProps) => {
 
   function handleLogin() {
     setIsLoading(true);
+
     signin(email, password)
       .then((ok) => {
         if (ok) {

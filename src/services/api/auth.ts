@@ -9,4 +9,4 @@ export const authQueryFns = {
 };
 
 export interface LoginResponse
-  extends QueryResponse<{ userId: number; token: string }> {}
+  extends QueryResponse<{ userId: number; idToken: string }> {}

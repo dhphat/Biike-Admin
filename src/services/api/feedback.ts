@@ -20,6 +20,7 @@ export interface Feedback {
   feedbackContent: string;
   criteria: string;
   createdDate: string;
+  tripTip: number;
 }
 
 export interface FeedbacksResponse

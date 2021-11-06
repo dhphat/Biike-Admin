@@ -20,9 +20,6 @@ export const BiikeAreaPage = (props: BiikeAreaPageProps) => {
             <Button type="primary" className="rounded">
               Xem
             </Button>
-            <Button type="primary" className="rounded">
-              Sửa
-            </Button>
             <Button type="primary" danger className="rounded">
               Xóa
             </Button>

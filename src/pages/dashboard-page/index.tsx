@@ -43,7 +43,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
     console.log("click left button", e);
   }
 
-  function handleMenuClick(e) {
+  function handleMenuClick(e: any) {
     message.info("Click on menu item.");
     console.log("click", e);
   }

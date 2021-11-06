@@ -1,3 +1,9 @@
 :root {
   --primary-color: #0c6ff9;
 }
+
+// overwrite ant design
+.ant-message .ant-message-notice {
+  text-align: right;
+  padding-right: 15px;
+}

@@ -6,7 +6,7 @@ import "./index.scss";
 
 interface BiikeStationDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
-  station: Station;
+  station?: Station;
   onOk?: (id: number, data: any, closeModalCallback?: () => void) => void;
   isUpdating?: boolean;
 }
@@ -27,11 +27,11 @@ export const BiikeStationDetailModal = ({
   }, [visible]);
 
   const handleCloseModal = () => {
-    toggleVisible(station.stationId);
+    station && toggleVisible(station.stationId);
   };
 
   const handleSubmitForm = (values: any) => {
-    onOk?.(station.stationId, values, handleCloseModal);
+    station && onOk?.(station.stationId, values, handleCloseModal);
   };
 
   return (
@@ -95,8 +95,7 @@ export const BiikeStationDetailModal = ({
 
           <div className="station-detail-modal-tools">
             <Button onClick={handleCloseModal}>Thoát</Button>
-
-            {station.isDeleted === false && (
+            {station?.isDeleted === false && (
               <Button
                 type="primary"
                 className="rounded"

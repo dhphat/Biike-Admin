@@ -1,10 +1,5 @@
-import { Select, Button, Tag, Rate } from "antd";
-import {
-  CaretDownOutlined,
-  CheckCircleOutlined,
-  CommentOutlined,
-  StarOutlined,
-} from "@ant-design/icons";
+import { Select, Button, Tag, Rate, Pagination, Divider } from "antd";
+import { CaretDownOutlined, CommentOutlined } from "@ant-design/icons";
 import "./index.scss";
 import { useQuery } from "react-query";
 import { useState } from "react";
@@ -19,9 +14,34 @@ interface FeedbackDetailModal {
 interface BiikeFeedBackPageProps {}
 
 export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
-  const { data, isFetching, refetch } = useQuery(["feedbacks"], () =>
-    feedbackQueryFns.feedbacks({ page: 1, limit: 10 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 5,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    ["feedbacks", pagination.page, pagination.pageSize],
+    () =>
+      feedbackQueryFns.feedbacks({
+        page: pagination.page,
+        limit: pagination.pageSize,
+      }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
 
   // view
   const [feedbackDetailModal, setFeedbackDetailModal] =
@@ -62,8 +82,8 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
             <div className="item-details text-gray-500 mb-1">
               <div className="item-details text-gray-500 ">
                 <div className="feedback-name text-base ">
-                  <span className="font-bold">User {feedback.userId}</span> đánh
-                  giá{" "}
+                  <span className="font-bold">{feedback.userFullname}</span>{" "}
+                  đánh giá{" "}
                   <span>
                     <Rate
                       className="text-sm"
@@ -90,7 +110,7 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
 
               <BiikeFeedbackDetailModal
                 visibleManage={[
-                  feedbackDetailModal.openId === feedback.userId,
+                  feedbackDetailModal.openId === feedback.feedbackId,
                   toggleFeedbackDetailModalVisible,
                 ]}
                 feedback={feedback}
@@ -101,6 +121,13 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
             </div>
           </div>
         ))}
+        <Divider />
+        <Pagination
+          current={pagination.page}
+          pageSize={pagination.pageSize}
+          onChange={handlePageChange}
+          total={pagination.total}
+        />
       </div>
     </div>
   );

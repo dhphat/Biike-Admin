@@ -3,7 +3,7 @@ import {
   EnvironmentOutlined,
   MoreOutlined,
 } from "@ant-design/icons";
-import { Button, Modal, Tag } from "antd";
+import { Button, Divider, Modal, Pagination, Tag } from "antd";
 import { useMutation, useQuery } from "react-query";
 import { BiikeRouteModal } from "src/organisms/route-modal";
 import { BiikeRouteDetailModal } from "src/organisms/route-detail-modal";
@@ -20,9 +20,34 @@ interface RouteDetailModal {
 interface BiikeRoutePageProps {}
 
 export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
-  const { data, isFetching, refetch } = useQuery(["routes"], () =>
-    routeQueryFns.routes({ page: 1, limit: 10 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 5,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    ["routes", pagination.page, pagination.pageSize],
+    () =>
+      routeQueryFns.routes({
+        page: pagination.page,
+        limit: pagination.pageSize,
+      }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
 
   // create
   const [isCreateRouteModalVisible, toggleCreateRouteModalVisible] =
@@ -170,6 +195,13 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
             </div>
           </div>
         ))}
+        <Divider />
+        <Pagination
+          current={pagination.page}
+          pageSize={pagination.pageSize}
+          onChange={handlePageChange}
+          total={pagination.total}
+        />
       </div>
     </div>
   );

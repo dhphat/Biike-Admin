@@ -1,4 +1,4 @@
-import { Select, Button, Tag } from "antd";
+import { Select, Button, Tag, Pagination, Divider } from "antd";
 import {
   CaretDownOutlined,
   FieldNumberOutlined,
@@ -20,9 +20,34 @@ interface BikeDetailModal {
 interface BiikeBikePageProps {}
 
 export const BiikeBikePage = (props: BiikeBikePageProps) => {
-  const { data, isFetching } = useQuery(["bikes"], () =>
-    bikeQueryFns.bikes({ page: 1, limit: 10 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 5,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    ["bikes", pagination.page, pagination.pageSize],
+    () =>
+      bikeQueryFns.bikes({
+        page: pagination.page,
+        limit: pagination.pageSize,
+      }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
 
   // view
   const [bikeDetailModal, setBikeDetailModal] = useState<BikeDetailModal>({
@@ -94,6 +119,13 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
             </div>
           </div>
         ))}
+        <Divider />
+        <Pagination
+          current={pagination.page}
+          pageSize={pagination.pageSize}
+          onChange={handlePageChange}
+          total={pagination.total}
+        />
       </div>
     </div>
   );

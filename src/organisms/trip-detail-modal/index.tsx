@@ -6,7 +6,7 @@ import "./index.scss";
 
 interface BiikeTripDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
-  trip: Trip;
+  trip?: Trip;
   onOk?: (id: number, data: any, closeModalCallback?: () => void) => void;
   isUpdating?: boolean;
 }
@@ -18,6 +18,7 @@ export const BiikeTripDetailModal = ({
 }: BiikeTripDetailModalProps) => {
   const [visible, toggleVisible] = visibleManage;
   const [form] = Form.useForm();
+  // const [tripData, settripData] = useState(initialState)
 
   useEffect(() => {
     if (visible) {
@@ -26,11 +27,11 @@ export const BiikeTripDetailModal = ({
   }, [visible]);
 
   const handleCloseModal = () => {
-    toggleVisible(trip.tripId);
+    trip && toggleVisible(trip.tripId);
   };
 
   const handleSubmitForm = (values: any) => {
-    onOk?.(trip.tripId, values, handleCloseModal);
+    trip && onOk?.(trip.tripId, values, handleCloseModal);
   };
 
   return (
@@ -45,7 +46,7 @@ export const BiikeTripDetailModal = ({
         <div className="user-detail-modal-content">
           <div className="ml-auto flex pa-10 items-center">
             <div className="flex-col flex mr-2 font-sans ">
-              <span className="text-lg font-bold">Test</span>
+              <span className="text-lg font-bold">{trip?.bikerFullname}</span>
               <span className="text-lg font-bold">
                 <StarFilled style={{ color: "#f4c20d	" }} /> test
               </span>

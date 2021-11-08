@@ -8,9 +8,6 @@ interface Props {}
 
 export const BiikeRoutes = (props: Props) => {
   const { user, isAuthenticating } = useAuth();
-  useEffect(() => {
-    console.log("okkkkk", user);
-  }, [user]);
 
   return (
     <BrowserRouter>
@@ -52,9 +49,10 @@ export const BiikeRoutes = (props: Props) => {
             }
             return (
               <Switch>
-                {route.nest.map((nest) => {
+                {route.nest.map((nest, index) => {
                   return (
                     <Route
+                      key={index}
                       path={route.path + nest.path}
                       render={() => renderComponent(nest.component, Layout)}
                     />

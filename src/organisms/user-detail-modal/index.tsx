@@ -98,8 +98,8 @@ export const BiikeUserDetailModal = ({
           </div>
 
           {user.userAddresses.length ? (
-            user.userAddresses.map((address) => (
-              <div className="user-email text-sm">
+            user.userAddresses.map((address, index) => (
+              <div key={index} className="user-email text-sm">
                 <span className="text-gray-500">
                   <EnvironmentOutlined /> {address.addressDetail}{" "}
                   {address.isDefault === true && (

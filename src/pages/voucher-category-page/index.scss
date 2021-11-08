@@ -1,0 +1,27 @@
+.biike-voucher-category-page {
+  .biike-voucher-category-tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .biike-voucher-category-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .voucher-category-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .item-details {
+      }
+
+      .item-tools {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}

@@ -99,7 +99,7 @@ export const BiikeBikeDetailModal = ({
                   <span className="text-gray-1000">Ảnh chụp cà vẹt xe</span>
                   <br />
                 </div>
-                <Image src="https://chuyenxe.com/wp-content/uploads/2020/02/cavet-xe-la-gi.jpg" />
+                <Image src={bike.bikeLicensePicture} />
 
                 <br />
                 <div className="user-email text-sm font-bold mb-2">
@@ -107,14 +107,14 @@ export const BiikeBikeDetailModal = ({
                   <br />
                 </div>
 
-                <Image src="https://chuyenxe.com/wp-content/uploads/2020/02/cavet-xe-la-gi.jpg" />
+                <Image src={bike.bikePicture} />
 
                 <br />
                 <div className="user-email text-sm font-bold mb-2">
                   <span className="text-gray-1000">Ảnh chụp biển số xe</span>
                   <br />
                 </div>
-                <Image src="https://chuyenxe.com/wp-content/uploads/2020/02/cavet-xe-la-gi.jpg" />
+                <Image src={bike.plateNumberPicture} />
               </Col>
             </Row>
           </div>

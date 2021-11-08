@@ -14,8 +14,12 @@ export const tripQueryFns = {
 export interface Trip {
   tripId: number;
   keerId: number;
+  keerFullname: string;
   bikerId: number;
+  bikerFullname: string;
   routeId: number;
+  departureStationName: string;
+  destinationStationName: string;
   createdDate: string;
   bookTime: string;
   pickupTime: string;
@@ -25,6 +29,7 @@ export interface Trip {
   plateNumber: string;
   isScheduled: boolean;
   cancelPersonId: number;
+  cancelPersonFullname: string;
   cancelReason: string;
 }
 

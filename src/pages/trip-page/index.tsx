@@ -1,50 +1,69 @@
-import { Button, Modal, Table, Tag, TableColumnsType, Space } from "antd";
-import { useMutation, useQuery } from "react-query";
-import { useToggle } from "src/hooks/useToggle";
+import {
+  Table,
+  TableColumnsType,
+  Space,
+  Tag,
+  Button,
+  Pagination,
+  Divider,
+} from "antd";
+import { useQuery } from "react-query";
 import { Trip, tripQueryFns } from "src/services/api/trip";
 import { BiikeTripDetailModal } from "src/organisms/trip-detail-modal";
 import "./index.scss";
-import { EnvironmentOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { TRIP_STATUS } from "src/utils/constants";
+import moment from "moment";
 
-const columns: TableColumnsType<Trip> = [
+const initColumns: TableColumnsType<Trip> = [
+  {
+    title: "ID",
+    dataIndex: "tripId",
+  },
   {
     title: "Keer",
-    dataIndex: "keerId",
+    dataIndex: "keerFullname",
   },
   {
     title: "Biker",
-    dataIndex: "bikerId",
+    dataIndex: "bikerFullname",
   },
   {
-    title: "Tuyến",
-    dataIndex: "routeId",
+    title: "Điểm đi",
+    dataIndex: "departureStationName",
+  },
+  {
+    title: "Điểm đến",
+    dataIndex: "destinationStationName",
   },
   {
     title: "Thời gian tạo",
     dataIndex: "createdDate",
+    render: (bookTime: string) =>
+      moment(bookTime).format("DD/MM/YYYY HH:mm:ss"),
   },
   {
     title: "Lịch chuyến",
     dataIndex: "bookTime",
+    render: (bookTime: string) =>
+      moment(bookTime).format("DD/MM/YYYY HH:mm:ss"),
   },
   {
     title: "Trạng thái",
     dataIndex: "status",
-    render: (status: Trip["status"]) => TRIP_STATUS[status] || status,
+    render: (status: Trip["status"]) => (
+      <Tag color="blue" key={status}>
+        {TRIP_STATUS[status] || status}
+      </Tag>
+    ),
   },
   {
     title: "Loại",
     dataIndex: "isScheduled",
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (text, record) => (
-      <Space size="middle">
-        <a>Xem</a>
-      </Space>
+    render: (isScheduled: Trip["isScheduled"]) => (
+      <Tag color="volcano">
+        {isScheduled ? "Chuyến đặt lịch" : "Chuyến Now"}
+      </Tag>
     ),
   },
 ];
@@ -57,9 +76,34 @@ interface TripDetailModal {
 interface BiikeTripPageProps {}
 
 export const BiikeTripPage = (props: BiikeTripPageProps) => {
-  const { data, isFetching, refetch } = useQuery(["trips"], () =>
-    tripQueryFns.trips({ page: 1, limit: 10 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 3,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    ["trips", pagination.page, pagination.pageSize],
+    () =>
+      tripQueryFns.trips({
+        page: pagination.page,
+        limit: pagination.pageSize,
+      }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
 
   const [tripDetailModal, setTripDetailModal] = useState<TripDetailModal>({
     openId: -1,
@@ -76,22 +120,41 @@ export const BiikeTripPage = (props: BiikeTripPageProps) => {
     setTripDetailModal({ openId: data.tripId, data });
   };
 
+  const columns: TableColumnsType<Trip> = [
+    ...initColumns,
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button type="link" onClick={() => openTripDetailModal(record)}>
+          Xem
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="biike-trip-page">
       <Table
-        dataSource={data?.data.map((trip, index) => ({
-          key: index,
-          keerId: trip.keerId,
-          bikerId: trip.bikerId,
-          routeId: trip.routeId,
-          createdDate: trip.createdDate,
-          bookTime: trip.bookTime,
-          status: trip.status,
-          isScheduled: trip.isScheduled,
-        }))}
+        dataSource={data?.data}
+        rowKey={({ tripId }) => tripId}
         columns={columns}
+        pagination={false}
       />
-      ;
+      <BiikeTripDetailModal
+        visibleManage={[
+          tripDetailModal.openId === tripDetailModal.data?.tripId,
+          toggleTripDetailModalVisible,
+        ]}
+        trip={tripDetailModal.data}
+      />
+      <Divider />
+      <Pagination
+        current={pagination.page}
+        pageSize={pagination.pageSize}
+        onChange={handlePageChange}
+        total={pagination.total}
+      />
     </div>
   );
 };

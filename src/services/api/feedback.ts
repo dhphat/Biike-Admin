@@ -15,6 +15,7 @@ export const feedbackQueryFns = {
 export interface Feedback {
   feedbackId: number;
   userId: number;
+  userFullname: string;
   tripId: number;
   tripStar: number;
   feedbackContent: string;

@@ -1,4 +1,4 @@
-import { Button, Modal, Tag } from "antd";
+import { Button, Modal, Tag, Pagination, Divider } from "antd";
 import { useMutation, useQuery } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
 import { Station, stationQueryFns } from "src/services/api/station";
@@ -16,9 +16,34 @@ interface StationDetailModal {
 interface BiikeStationPageProps {}
 
 export const BiikeStationPage = (props: BiikeStationPageProps) => {
-  const { data, isFetching, refetch } = useQuery(["stations"], () =>
-    stationQueryFns.stations({ page: 1, limit: 10 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 5,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    ["stations", pagination.page, pagination.pageSize],
+    () =>
+      stationQueryFns.stations({
+        page: pagination.page,
+        limit: pagination.pageSize,
+      }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
 
   // create
   const [isCreateStationModalVisible, toggleCreateStationModalVisible] =
@@ -129,15 +154,6 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
               >
                 Xem
               </Button>
-              <BiikeStationDetailModal
-                visibleManage={[
-                  stationDetailModal.openId === station.stationId,
-                  toggleStationDetailModalVisible,
-                ]}
-                station={station}
-                onOk={handleUpdateStation}
-                isUpdating={updateStationMutation.isLoading}
-              />
 
               {station.isDeleted === true ? (
                 <Button
@@ -160,6 +176,22 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
             </div>
           </div>
         ))}
+        <BiikeStationDetailModal
+          visibleManage={[
+            stationDetailModal.openId === stationDetailModal.data?.stationId,
+            toggleStationDetailModalVisible,
+          ]}
+          station={stationDetailModal.data}
+          onOk={handleUpdateStation}
+          isUpdating={updateStationMutation.isLoading}
+        />
+        <Divider />
+        <Pagination
+          current={pagination.page}
+          pageSize={pagination.pageSize}
+          onChange={handlePageChange}
+          total={pagination.total}
+        />
       </div>
     </div>
   );

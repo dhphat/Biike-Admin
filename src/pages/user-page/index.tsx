@@ -1,4 +1,4 @@
-import { Button, Input, Modal, Tag } from "antd";
+import { Button, Divider, Input, Modal, Pagination, Tag } from "antd";
 import { useMutation, useQuery } from "react-query";
 import { User, userQueryFns } from "src/services/api/user";
 import { BiikeUserDetailModal } from "src/organisms/user-detail-modal";
@@ -14,8 +14,30 @@ interface UserDetailModal {
 interface BiikeUserPageProps {}
 
 export const BiikeUserPage = (props: BiikeUserPageProps) => {
-  const { data, isFetching, refetch } = useQuery(["users"], () =>
-    userQueryFns.users({ page: 1, limit: 20 })
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 5,
+    total: 10,
+  });
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
+
+  const { data, isFetching, refetch } = useQuery(
+    ["users", pagination.page, pagination.pageSize],
+    () =>
+      userQueryFns.users({ page: pagination.page, limit: pagination.pageSize }),
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
   );
 
   // delete
@@ -62,9 +84,13 @@ export const BiikeUserPage = (props: BiikeUserPageProps) => {
         </Button>
       </div>
       <div className="biike-user-content mt-4">
-        {data?.data.map((user) => (
-          <div className="user-item bg-white px-8 py-4 content-center">
+        {data?.data.map((user, index) => (
+          <div
+            key={index}
+            className="user-item bg-white px-8 py-4 content-center"
+          >
             <div className="item-details text-gray-500 mb-1">
+              <div className="user-email text-sm">ID: {user.userId}</div>
               <div className="user-name text-base font-bold">
                 {user.userFullname}{" "}
                 {user.isDeleted === true && (
@@ -115,6 +141,13 @@ export const BiikeUserPage = (props: BiikeUserPageProps) => {
             </div>
           </div>
         ))}
+        <Divider />
+        <Pagination
+          current={pagination.page}
+          pageSize={pagination.pageSize}
+          onChange={handlePageChange}
+          total={pagination.total}
+        />
       </div>
     </div>
   );

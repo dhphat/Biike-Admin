@@ -45,7 +45,7 @@ export const BiikeFeedbackDetailModal = ({
         <div className="feedback-detail-modal-content">
           <div className="ml-auto flex pa-10 items-center">
             <div className="flex-col flex font-sans font-bold">
-              <span>{feedback.userId} đánh giá</span>
+              <span>{feedback.userFullname} đánh giá</span>
               <div className="mb-2">
                 <Rate
                   className="text-3xl"
@@ -57,24 +57,13 @@ export const BiikeFeedbackDetailModal = ({
           </div>
           {true === true && <Tag color="processing">{feedback.criteria}</Tag>}
           <Divider />
-          <div className="user-email text-sm ">
-            <span className="text-gray-1000 font-bold">Người đánh giá</span>
-            <br />
-            {feedback.feedbackId}
-          </div>
-          <br />
 
           <div className="user-email text-sm ">
-            <span className="text-gray-1000 font-bold">Chuyến đi từ</span>
+            <span className="text-gray-1000 font-bold">ID chuyến</span>
             <br />
             {feedback.tripId}
           </div>
 
-          <div className="user-email text-sm ">
-            <span className="text-gray-1000 font-bold">đến</span>
-            <br />
-            {feedback.tripId}
-          </div>
           <br />
 
           <div className="user-email text-sm ">

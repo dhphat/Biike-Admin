@@ -79,7 +79,7 @@ export const BiikeTripPage = (props: BiikeTripPageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 3,
+    pageSize: 10,
     total: 10,
   });
 
@@ -123,7 +123,7 @@ export const BiikeTripPage = (props: BiikeTripPageProps) => {
   const columns: TableColumnsType<Trip> = [
     ...initColumns,
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) => (
         <Button type="link" onClick={() => openTripDetailModal(record)}>

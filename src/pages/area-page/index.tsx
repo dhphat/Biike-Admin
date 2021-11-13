@@ -21,7 +21,7 @@ export const BiikeAreaPage = (props: BiikeAreaPageProps) => {
               Xem
             </Button>
             <Button type="primary" danger className="rounded">
-              Xóa
+              Tạm dừng
             </Button>
           </div>
         </div>

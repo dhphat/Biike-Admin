@@ -39,14 +39,12 @@ const initColumns: TableColumnsType<Trip> = [
   {
     title: "Thời gian tạo",
     dataIndex: "createdDate",
-    render: (bookTime: string) =>
-      moment(bookTime).format("DD/MM/YYYY HH:mm:ss"),
+    render: (bookTime: string) => moment(bookTime).format("DD/MM/YYYY HH:mm"),
   },
   {
     title: "Lịch chuyến",
     dataIndex: "bookTime",
-    render: (bookTime: string) =>
-      moment(bookTime).format("DD/MM/YYYY HH:mm:ss"),
+    render: (bookTime: string) => moment(bookTime).format("DD/MM/YYYY HH:mm"),
   },
   {
     title: "Trạng thái",

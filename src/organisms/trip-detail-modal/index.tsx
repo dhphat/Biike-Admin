@@ -1,7 +1,24 @@
-import { StarFilled } from "@ant-design/icons";
-import { Button, Form, Modal } from "antd";
+import {
+  AimOutlined,
+  EnvironmentOutlined,
+  MoreOutlined,
+  StarFilled,
+} from "@ant-design/icons";
+import {
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Tag,
+  Timeline,
+} from "antd";
 import { useEffect } from "react";
 import { Trip } from "src/services/api/trip";
+import { TRIP_STATUS } from "src/utils/constants";
+import moment from "moment";
 import "./index.scss";
 
 interface BiikeTripDetailModalProps {
@@ -44,38 +61,122 @@ export const BiikeTripDetailModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="user-detail-modal-content">
-          <div className="ml-auto flex pa-10 items-center">
-            <div className="flex-col flex mr-2 font-sans ">
-              <span className="text-lg font-bold">{trip?.bikerFullname}</span>
-              <span className="text-lg font-bold">
-                <StarFilled style={{ color: "#f4c20d	" }} /> test
-              </span>
-            </div>
-          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+              <div className=" text-sm">
+                <span className="text-gray-500">ID: {trip?.tripId}</span>
+              </div>
+              <Tag color="volcano">
+                {trip?.isScheduled ? "Chuyến đặt lịch" : "Chuyến Now"}
+              </Tag>
+              <Tag color="blue">{TRIP_STATUS[trip?.status]}</Tag>
+            </Col>
+            <Col span={12}>
+              <div className=" text-sm">
+                <span className="text-gray-500">
+                  Thời gian tạo
+                  <br />
+                  {moment(trip?.createdDate).format("DD/MM/YYYY HH:mm")}
+                </span>
+              </div>
+            </Col>
+          </Row>
 
-          <br />
-          <div className="user-email text-sm font-bold">
-            <span className="text-gray-1000">Thông tin cơ bản</span>
-          </div>
+          <Divider />
 
-          <br />
-          <div className="user-email text-sm font-bold">
-            <span className="text-gray-1000">Số địa chỉ</span>
-          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+              <div className="ml-auto flex pa-10 items-center">
+                <div className="flex-col flex mr-2 font-sans ">
+                  <span className="text-gray-500 ">Keer</span>
+                  <span className="text-base font-bold">
+                    {trip?.keerFullname}
+                  </span>
+                </div>
+              </div>
+            </Col>
 
-          <br />
-          <div className="user-email text-sm font-bold">
-            <span className="text-gray-1000">Thông tin xe</span>
-          </div>
+            <Col span={12}>
+              <div className="ml-auto flex pa-10 items-center">
+                {trip?.bikerId == null ? (
+                  <div className="flex-col flex mr-2 font-sans ">
+                    <span className="text-gray-500 ">Biker </span>
+                    <span className="text-base">Đang tìm...</span>
+                  </div>
+                ) : (
+                  <div className="flex-col flex mr-2 font-sans ">
+                    <span className="text-gray-500 ">
+                      Biker{" "}
+                      <Tag color="green">Biển số xe: {trip?.plateNumber}</Tag>
+                    </span>
+                    <span className="text-base font-bold">
+                      {trip?.bikerFullname}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Col>
+          </Row>
+          <Divider />
+          <Row gutter={16}>
+            <Col span={12}>
+              <div className="ml-auto flex pa-10 items-center">
+                <div className="flex-col flex mr-2 font-sans ">
+                  <span className="text-gray-500 ">Từ</span>
+                  <span className="text-base font-bold">
+                    {trip?.departureStationName}
+                  </span>
+                </div>
+              </div>
+            </Col>
 
-          <br />
+            <Col span={12}>
+              <div className="ml-auto flex pa-10 items-center">
+                <div className="flex-col flex mr-2 font-sans ">
+                  <span className="text-gray-500 ">Đến</span>
+                  <span className="text-base font-bold">
+                    {trip?.destinationStationName}
+                  </span>
+                </div>
+              </div>
+            </Col>
+          </Row>
 
-          <br />
+          <Divider />
 
-          <br />
-          {/* createdDate
-          
-          gender */}
+          <Timeline>
+            <Timeline.Item color="green">
+              Thời gian đặt: {moment(trip?.bookTime).format("DD/MM/YYYY HH:mm")}
+            </Timeline.Item>
+            {trip?.pickupTime == null ? (
+              <Timeline.Item color="gray">Chưa đón</Timeline.Item>
+            ) : (
+              <Timeline.Item color="green">
+                Thời gian đón:{" "}
+                {moment(trip?.pickupTime).format("DD/MM/YYYY HH:mm")}
+              </Timeline.Item>
+            )}
+
+            {trip?.finishedTime == null ? (
+              <Timeline.Item color="gray">Chưa hoàn thành</Timeline.Item>
+            ) : (
+              <Timeline.Item color="green">
+                Thời gian hoàn thành:{" "}
+                {moment(trip?.finishedTime).format("DD/MM/YYYY HH:mm")}
+              </Timeline.Item>
+            )}
+
+            {trip?.cancelTime != null && (
+              <Timeline.Item color="red">
+                <p>
+                  Thời gian hủy:{" "}
+                  {moment(trip?.cancelTime).format("DD/MM/YYYY HH:mm")}
+                </p>
+                <p>Người hủy: {trip?.cancelPersonFullname}</p>
+                <p>Lí do hủy: {trip?.cancelReason}</p>
+              </Timeline.Item>
+            )}
+          </Timeline>
 
           <div className="user-detail-modal-tools">
             <Button onClick={handleCloseModal}>Thoát</Button>

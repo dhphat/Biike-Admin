@@ -13,10 +13,11 @@ export const userQueryFns = {
 };
 
 export interface UserAddress {
-  addressName: string;
-  addressDetail: string;
-  addressCoordinate: string;
-  note: string;
+  userAddressId: number;
+  userAddressName: string;
+  userAddressDetail: string;
+  userAddressCoordinate: string;
+  userAddressNote: string;
   isDefault: boolean;
 }
 

@@ -16,14 +16,10 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
           <div className="item-details text-gray-500 mb-1">
             <div className="admin-name text-base font-bold">Đỗ Hữu Phát</div>
             <div className="admin-email text-sm">phatdhse62586@fpt.edu.vn</div>
-            <div className="admin-phone text-sm">Admin</div>
           </div>
           <div className="item-tools">
             <Button type="primary" className="rounded">
               Xem
-            </Button>
-            <Button type="primary" className="rounded">
-              Sửa
             </Button>
             <Button type="primary" danger className="rounded">
               Xóa
@@ -35,14 +31,10 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
           <div className="item-details text-gray-500 mb-1">
             <div className="admin-name text-base font-bold">Thảo Vân</div>
             <div className="admin-email text-sm">thaovanse62586@fpt.edu.vn</div>
-            <div className="admin-phone text-sm">Moderator</div>
           </div>
           <div className="item-tools">
             <Button type="primary" className="rounded">
               Xem
-            </Button>
-            <Button type="primary" className="rounded">
-              Sửa
             </Button>
             <Button type="primary" danger className="rounded">
               Xóa
@@ -54,14 +46,10 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
           <div className="item-details text-gray-500 mb-1">
             <div className="admin-name text-base font-bold">Hải Triều</div>
             <div className="admin-email text-sm">haitrieu62586@fpt.edu.vn</div>
-            <div className="admin-phone text-sm">Admin</div>
           </div>
           <div className="item-tools">
             <Button type="primary" className="rounded">
               Xem
-            </Button>
-            <Button type="primary" className="rounded">
-              Sửa
             </Button>
             <Button type="primary" danger className="rounded">
               Xóa

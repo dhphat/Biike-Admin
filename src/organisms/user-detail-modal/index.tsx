@@ -101,7 +101,7 @@ export const BiikeUserDetailModal = ({
             user.userAddresses.map((address, index) => (
               <div key={index} className="user-email text-sm">
                 <span className="text-gray-500">
-                  <EnvironmentOutlined /> {address.addressDetail}{" "}
+                  <EnvironmentOutlined /> {address.userAddressDetail}{" "}
                   {address.isDefault === true && (
                     <Tag color="blue">Mặc định</Tag>
                   )}

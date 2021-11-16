@@ -10,6 +10,10 @@ export const userQueryFns = {
     fetchApis.GET("/users", params),
   user: (id: number): Promise<UserResponse> => fetchApis.GET(`/user/${id}`),
   deleteUser: (id: number) => fetchApis.DELETE(`/users/${id}`),
+  createUser: (body: object): Promise<UserResponse> =>
+    fetchApis.POST(`/users`, body),
+  editProfile: ([id, body]: [number, object]): Promise<UserResponse> =>
+    fetchApis.PUT(`/users/${id}/profile`, body),
 };
 
 export interface UserAddress {

@@ -1,11 +1,10 @@
-import { Button, Modal, Tag, Pagination, Divider } from "antd";
+import { Button, Modal, Pagination, Divider } from "antd";
 import { useMutation, useQuery } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
 import { User, userQueryFns } from "src/services/api/user";
 import { BiikeAdminModal } from "src/organisms/admin-modal";
 import { BiikeAdminDetailModal } from "src/organisms/admin-detail-modal";
 import "./index.scss";
-import { EnvironmentOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 interface AdminDetailModal {

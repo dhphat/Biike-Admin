@@ -127,7 +127,11 @@ export const routes: BiikeMapRoute[] = [
     privateOnly: true,
     layout: BiikeDefaultLayout,
     nest: [
-      { name: "Biker & Keer", path: "/user", component: BiikeUserPage },
+      {
+        name: "Biker & Keer",
+        path: "/biker-and-keer",
+        component: BiikeUserPage,
+      },
       { name: "Xe", path: "/bike", component: BiikeBikePage },
       { name: "Đánh giá", path: "/feedback", component: BiikeFeedbackPage },
       {

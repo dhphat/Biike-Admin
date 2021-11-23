@@ -21,12 +21,15 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
     total: 10,
   });
 
+  const [tripStar, setTripStar] = useState(-1);
+
   const { data, isFetching, refetch } = useQuery(
-    ["feedbacks", pagination.page, pagination.pageSize],
+    ["feedbacks", pagination.page, pagination.pageSize, tripStar],
     () =>
       feedbackQueryFns.feedbacks({
         page: pagination.page,
         limit: pagination.pageSize,
+        tripStar: tripStar >= 0 ? tripStar : undefined,
       }),
     {
       onSuccess: (data) => {
@@ -41,6 +44,10 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
       page,
       ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
     }));
+  };
+
+  const handleTripStarChange = (value: number) => {
+    setTripStar(value);
   };
 
   // view
@@ -65,15 +72,16 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
       <div className="biike-feedback-tools">
         <Select
           suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-          defaultValue="all"
+          defaultValue={-1}
           options={[
-            { label: "Tất cả", value: "all" },
-            { label: "5 sao", value: "fiveStars" },
-            { label: "4 sao", value: "fourStars" },
-            { label: "3 sao", value: "threeStars" },
-            { label: "2 sao", value: "twoStars" },
-            { label: "1 sao", value: "oneStar" },
+            { label: "Tất cả", value: -1 },
+            { label: "5 sao", value: 5 },
+            { label: "4 sao", value: 4 },
+            { label: "3 sao", value: 3 },
+            { label: "2 sao", value: 2 },
+            { label: "1 sao", value: 1 },
           ]}
+          onChange={handleTripStarChange}
         />
       </div>
       <div className="biike-feedback-content mt-4">

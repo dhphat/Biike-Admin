@@ -16,6 +16,20 @@ const getHeaders = () => {
   return headers;
 };
 
+const getFileHeaders = () => {
+  const headers = new Headers();
+  // headers.append("Content-Type", "multipart/form-data");
+  const stringLocalUser = localStorage.getItem("local_user") || "";
+  try {
+    const objectLocalUser: LocalUser = JSON.parse(stringLocalUser);
+    if (objectLocalUser.token) {
+      headers.set("Authorization", `Bearer ${objectLocalUser.token}`);
+    }
+  } catch (error) {}
+
+  return headers;
+};
+
 const getStringParams = (params?: object) => {
   if (!params) {
     return "";
@@ -41,6 +55,14 @@ export const fetchApis = {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(body),
+    });
+    return response.json();
+  },
+  POST_FILE: async (path: string, body: FormData) => {
+    const response = await fetch(baseUrl + path, {
+      method: "POST",
+      headers: getFileHeaders(),
+      body: body,
     });
     return response.json();
   },

@@ -20,8 +20,13 @@ import {
   InputNumber,
   Image,
   Divider,
+  UploadProps,
 } from "antd";
+import { RcFile } from "antd/lib/upload";
+import { useEffect, useState } from "react";
+import { useMutation } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
+import { voucherQueryFns } from "src/services/api/voucher";
 import "./index.scss";
 
 interface BiikeVoucherModalProps {
@@ -41,26 +46,65 @@ export const BiikeVoucherModal = ({
   };
 
   const handleSubmitForm = (values: any) => {
-    onOk?.(values, handleCloseModal);
+    onOk?.(
+      { ...values, bannerImages: bannerUrlList.map(({ url }) => url) },
+      handleCloseModal
+    );
   };
 
   //upload banner
-  const props = {
-    name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
+  const [bannerFileList, setBannerFileList] = useState<
+    UploadProps<any>["fileList"]
+  >([]);
+
+  const [bannerUrlList, setBannerUrlList] = useState<
+    { uid: string; url: string }[]
+  >([]);
+
+  const uploadImageMutation = useMutation(voucherQueryFns.uploadVoucherBanner);
+
+  const handleChangeUploader: UploadProps<any>["onChange"] = ({ fileList }) => {
+    setBannerFileList(fileList);
+
+    const successFiles = fileList.filter((file) => file.status === "done");
+
+    const removedBannerFiles = bannerUrlList.filter(
+      (banner) => !successFiles.find((file) => banner.uid === file.uid)
+    );
+
+    const newBannerFiles = successFiles.filter(
+      (file) => !bannerUrlList.find((banner) => file.uid === banner.uid)
+    );
+
+    setBannerUrlList((prev) => [
+      ...prev.filter(
+        (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
+      ),
+      ...newBannerFiles.map((nfile) => ({ uid: nfile.uid, url: "" })),
+    ]);
+  };
+
+  const handleUploadBanner: UploadProps<any>["customRequest"] = ({
+    file,
+    onSuccess,
+    onError,
+  }) => {
+    const formData = new FormData();
+    formData.append("imageType", "3");
+    formData.append("imageList", file);
+    uploadImageMutation
+      .mutateAsync(formData)
+      .then((res) => {
+        const bannerUrl = { uid: (file as RcFile).uid, url: res.data[0] };
+        setBannerUrlList([
+          ...bannerUrlList.filter((banner) => banner.uid != bannerUrl.uid),
+          bannerUrl,
+        ]);
+        onSuccess?.(undefined, new XMLHttpRequest());
+      })
+      .catch((err) => {
+        onError?.(err);
+      });
   };
 
   //date picker
@@ -146,7 +190,7 @@ export const BiikeVoucherModal = ({
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="voucherCategoryName">
+              <Form.Item name="VoucherCategoryId">
                 <div className=" text-sm font-medium ">
                   <span className="text-gray-500">Danh mục ưu đãi</span>
 
@@ -154,60 +198,24 @@ export const BiikeVoucherModal = ({
                     suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                     // defaultValue="1"
 
-                    options={[{ label: "Danh mục ưu đãi", value: "all" }]}
+                    options={[{ label: "Danh mục ưu đãi", value: "1" }]}
                     className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
                   />
                 </div>
               </Form.Item>
 
-              <div className=" text-sm font-medium ">
+              <div className=" text-sm font-medium mb-6">
                 <span className="text-gray-500">Thời gian áp dụng</span>
                 <RangePicker className="mt-2" />
               </div>
-            </Col>
-          </Row>
 
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item name="quantity">
-                <div className=" text-sm font-medium ">
-                  <span className="text-gray-500">Số lượng</span>
-
-                  <InputNumber
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                    disabled
-                  />
-                </div>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="remaining">
-                <div className=" text-sm font-medium ">
-                  <span className="text-gray-500">Còn lại</span>
-
-                  <InputNumber
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                    disabled
-                  />
-                </div>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
               <Form.Item name="amountOfPoint">
-                <div className=" text-sm font-medium ">
+                <div className=" text-sm font-medium">
                   <span className="text-gray-500">Điểm để đổi</span>
-
-                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+                  <br />
+                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
                 </div>
               </Form.Item>
-            </Col>
-            <Col span={6}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Danh sách mã</span>
-                <Button type="primary" className="rounded ml-1 mt-3">
-                  Xem
-                </Button>
-              </div>
             </Col>
           </Row>
           <Divider />
@@ -275,7 +283,12 @@ export const BiikeVoucherModal = ({
             ))} */}
 
             <br />
-            <Upload {...props}>
+            <Upload
+              listType="picture"
+              customRequest={handleUploadBanner}
+              fileList={bannerFileList}
+              onChange={handleChangeUploader}
+            >
               <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
             </Upload>
           </div>

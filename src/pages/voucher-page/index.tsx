@@ -5,10 +5,16 @@ import { useMutation, useQuery } from "react-query";
 import { Voucher, voucherQueryFns } from "src/services/api/voucher";
 import { BiikeVoucherModal } from "src/organisms/voucher-modal";
 import { BiikeVoucherDetailModal } from "src/organisms/voucher-detail-modal";
+import { BiikeVoucherCodeModal } from "src/organisms/voucher-code-modal";
 import "./index.scss";
 import { useState } from "react";
 
 interface VoucherDetailModal {
+  openId: number;
+  data?: Voucher;
+}
+
+interface VoucherCodeModal {
   openId: number;
   data?: Voucher;
 }
@@ -63,7 +69,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
     });
   };
 
-  // update
+  // update voucher
   const [voucherDetailModal, setVoucherDetailModal] =
     useState<VoucherDetailModal>({
       openId: -1,
@@ -91,6 +97,22 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
       closeModalCallback?.();
       refetch();
     });
+  };
+
+  // update voucher code
+  const [voucherCodeModal, setVoucherCodeModal] = useState<VoucherCodeModal>({
+    openId: -1,
+  });
+
+  const toggleVoucherCodeModalVisible = (openId: number) => {
+    setVoucherCodeModal((prev) => ({
+      ...prev,
+      openId: prev.openId === openId ? -1 : openId,
+    }));
+  };
+
+  const openVoucherCodeModal = (data: Voucher) => {
+    setVoucherCodeModal({ openId: data.voucherId, data });
   };
 
   // delete
@@ -165,6 +187,13 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
               <Button
                 type="primary"
                 className="rounded"
+                onClick={() => openVoucherCodeModal(voucher)}
+              >
+                Code
+              </Button>
+              <Button
+                type="primary"
+                className="rounded"
                 onClick={() => openVoucherDetailModal(voucher)}
               >
                 Xem
@@ -186,6 +215,16 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
             toggleVoucherDetailModalVisible,
           ]}
           voucher={voucherDetailModal.data}
+          onOk={handleUpdateVoucher}
+          isUpdating={updateVoucherMutation.isLoading}
+        />
+
+        <BiikeVoucherCodeModal
+          visibleManage={[
+            voucherCodeModal.openId === voucherCodeModal.data?.voucherId,
+            toggleVoucherCodeModalVisible,
+          ]}
+          voucher={voucherCodeModal.data}
           onOk={handleUpdateVoucher}
           isUpdating={updateVoucherMutation.isLoading}
         />

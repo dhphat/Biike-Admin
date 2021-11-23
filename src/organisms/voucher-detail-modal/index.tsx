@@ -20,10 +20,13 @@ import {
   InputNumber,
   Image,
   Divider,
+  UploadProps,
 } from "antd";
+import { RcFile } from "antd/lib/upload";
 import moment from "moment";
-import { useEffect } from "react";
-import { Voucher } from "src/services/api/voucher";
+import { useEffect, useState } from "react";
+import { useMutation } from "react-query";
+import { Voucher, voucherQueryFns } from "src/services/api/voucher";
 import { VoucherCategory } from "src/services/api/voucher-category";
 import "./index.scss";
 
@@ -46,8 +49,20 @@ export const BiikeVoucherDetailModal = ({
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (visible) {
+    if (visible && voucher) {
       form.setFieldsValue(voucher);
+      setBannerFileList(
+        voucher.voucherImages.map((image, index) => ({
+          uid: index,
+          status: "done",
+          url: image,
+        }))
+      );
+      //   {
+      //     uid: -1,
+      //     name: "image.png",
+      //     status: "done",
+      //     url: "https://firebasestorage.googleapis.com/v0/b/biike-c6a70.appspot.com/o/voucher%2Fimage_20211121_210217_049156.png?alt=media&token=c9a636c6-d7cd-433f-8d2e-1879417fba7e",
     }
   }, [visible]);
 
@@ -60,22 +75,58 @@ export const BiikeVoucherDetailModal = ({
   };
 
   //upload banner
-  const props = {
-    name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
+  const [bannerFileList, setBannerFileList] = useState<
+    UploadProps<any>["fileList"]
+  >([]);
+
+  const [bannerUrlList, setBannerUrlList] = useState<
+    { uid: string; url: string }[]
+  >([]);
+
+  const uploadImageMutation = useMutation(voucherQueryFns.uploadVoucherBanner);
+
+  const handleChangeUploader: UploadProps<any>["onChange"] = ({ fileList }) => {
+    setBannerFileList(fileList);
+
+    const successFiles = fileList.filter((file) => file.status === "done");
+
+    const removedBannerFiles = bannerUrlList.filter(
+      (banner) => !successFiles.find((file) => banner.uid === file.uid)
+    );
+
+    const newBannerFiles = successFiles.filter(
+      (file) => !bannerUrlList.find((banner) => file.uid === banner.uid)
+    );
+
+    setBannerUrlList((prev) => [
+      ...prev.filter(
+        (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
+      ),
+      ...newBannerFiles.map((nfile) => ({ uid: nfile.uid, url: "" })),
+    ]);
+  };
+
+  const handleUploadBanner: UploadProps<any>["customRequest"] = ({
+    file,
+    onSuccess,
+    onError,
+  }) => {
+    const formData = new FormData();
+    formData.append("imageType", "3");
+    formData.append("imageList", file);
+    uploadImageMutation
+      .mutateAsync(formData)
+      .then((res) => {
+        const bannerUrl = { uid: (file as RcFile).uid, url: res.data[0] };
+        setBannerUrlList([
+          ...bannerUrlList.filter((banner) => banner.uid != bannerUrl.uid),
+          bannerUrl,
+        ]);
+        onSuccess?.(undefined, new XMLHttpRequest());
+      })
+      .catch((err) => {
+        onError?.(err);
+      });
   };
 
   //date picker
@@ -94,11 +145,17 @@ export const BiikeVoucherDetailModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="voucher-detail-modal-content">
-          <div className="voucher-email text-sm">ID: {voucher?.voucherId}</div>
           <br />
 
           <Row gutter={16}>
             <Col span={12}>
+              <div className=" text-sm font-medium mb-11">
+                <span className="text-gray-500">ID</span>
+                <div className="voucher-email text-sm mb-2">
+                  {voucher?.voucherId}
+                </div>
+              </div>
+
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Tên ưu đãi</span>
                 <Form.Item name="voucherName">
@@ -116,18 +173,18 @@ export const BiikeVoucherDetailModal = ({
             <Col span={12}>
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Danh mục ưu đãi</span>
-                <Form.Item name="voucherCategoryName">
+                <Form.Item name="voucherCategoryId">
                   <Select
                     suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                     // defaultValue="1"
 
-                    options={[{ label: "Danh mục ưu đãi", value: "all" }]}
+                    options={[{ label: "Danh mục ưu đãi", value: "1" }]}
                     className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
                   />
                 </Form.Item>
               </div>
 
-              <div className=" text-sm font-medium ">
+              <div className=" text-sm font-medium mb-6">
                 <span className="text-gray-500">Thời gian áp dụng</span>
                 <RangePicker
                   className="mt-2"
@@ -138,49 +195,15 @@ export const BiikeVoucherDetailModal = ({
                   format={dateFormat}
                 />
               </div>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={6}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Số lượng</span>
-                <Form.Item name="quantity">
-                  <InputNumber
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                    disabled
-                  />
-                </Form.Item>
-              </div>
-            </Col>
-            <Col span={6}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Còn lại</span>
-                <Form.Item name="remaining">
-                  <InputNumber
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                    disabled
-                  />
-                </Form.Item>
-              </div>
-            </Col>
-            <Col span={6}>
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Điểm để đổi</span>
                 <Form.Item name="amountOfPoint">
-                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
                 </Form.Item>
               </div>
             </Col>
-            <Col span={6}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Danh sách mã</span>
-                <Button type="primary" className="rounded ml-1 mt-3">
-                  Xem
-                </Button>
-              </div>
-            </Col>
           </Row>
+
           <Divider />
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Mô tả</span>
@@ -245,7 +268,23 @@ export const BiikeVoucherDetailModal = ({
             ))}
 
             <br />
-            <Upload {...props}>
+            <Upload
+              // {...props}
+              // listType="picture"
+              // fileList={[
+              //   {
+              //     uid: -1,
+              //     name: "image.png",
+              //     status: "done",
+              //     url: "https://firebasestorage.googleapis.com/v0/b/biike-c6a70.appspot.com/o/voucher%2Fimage_20211121_210217_049156.png?alt=media&token=c9a636c6-d7cd-433f-8d2e-1879417fba7e",
+              //   },
+              // ]}
+
+              listType="picture"
+              customRequest={handleUploadBanner}
+              fileList={bannerFileList}
+              onChange={handleChangeUploader}
+            >
               <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
             </Upload>
           </div>

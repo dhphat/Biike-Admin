@@ -12,6 +12,8 @@ export const voucherQueryFns = {
     fetchApis.GET(`/voucher/${id}`),
   createVoucher: (body: object): Promise<VoucherResponse> =>
     fetchApis.POST(`/vouchers`, body),
+  uploadVoucherBanner: (body: FormData): Promise<any> =>
+    fetchApis.POST_FILE(`/images`, body),
   updateVoucher: ([id, body]: [number, object]): Promise<VoucherResponse> =>
     fetchApis.PUT(`/vouchers/${id}`, body),
   deleteVoucher: (id: number) => fetchApis.DELETE(`/vouchers/${id}`),

@@ -3,6 +3,7 @@ import { fetchApis, PaginationQueryResponse, QueryResponse } from "..";
 interface FeedbacksParams {
   page: number;
   limit: number;
+  tripStar?: number;
 }
 
 export const feedbackQueryFns = {

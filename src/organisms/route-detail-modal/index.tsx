@@ -1,8 +1,11 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Route } from "src/services/api/route";
+import moment from "moment";
 import "./index.scss";
+import { stationQueryFns } from "src/services/api/station";
+import { useQuery } from "react-query";
 
 interface BiikeRouteDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
@@ -23,6 +26,8 @@ export const BiikeRouteDetailModal = ({
   useEffect(() => {
     if (visible) {
       form.setFieldsValue(route);
+      setStartStationId(route.departureId);
+      setEndStationId(route.destinationId);
     }
   }, [visible]);
 
@@ -32,6 +37,21 @@ export const BiikeRouteDetailModal = ({
 
   const handleSubmitForm = (values: any) => {
     onOk?.(route.routeId, values, handleCloseModal);
+  };
+
+  const [startStationId, setStartStationId] = useState(-1);
+  const [endStationId, setEndStationId] = useState(-1);
+
+  const { data } = useQuery(["stations"], () =>
+    stationQueryFns.stations({ limit: 10, page: 1 })
+  );
+
+  const handleChangeStartStation = (stationId: number) => {
+    setStartStationId(stationId);
+  };
+
+  const handleChangeEndStation = (stationId: number) => {
+    setEndStationId(stationId);
   };
 
   return (
@@ -44,22 +64,22 @@ export const BiikeRouteDetailModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="route-detail-modal-content">
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Thời gian tạo</span>
-            <Form.Item name="createdDate">
-              <Input
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                disabled
-              />
-            </Form.Item>
+          <div className=" text-sm ">
+            <span className="text-gray-500 font-medium">Thời gian tạo</span>
+            <br />
+            <span className="text-gray-500">
+              {moment(route?.createdDate).format("DD/MM/YYYY HH:mm")}
+            </span>
+            <br />
+            <br />
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Khu vực</span>
             <Form.Item name="areaId">
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                defaultValue="1"
-                options={[{ label: "Trường Đại học FPT", value: "1" }]}
+                // defaultValue="1"
+                options={[{ label: "Trường Đại học FPT", value: 1 }]}
                 className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
               />
             </Form.Item>
@@ -67,11 +87,16 @@ export const BiikeRouteDetailModal = ({
 
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Trạm đầu</span>
-            <Form.Item name="departureName">
+            <Form.Item name="departureId">
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                defaultValue="1"
-                options={[{ label: "Trường Đại học FPT", value: "1" }]}
+                options={data?.data
+                  .filter((station) => station.stationId !== endStationId)
+                  .map((station) => ({
+                    value: station.stationId,
+                    label: station.name,
+                  }))}
+                onChange={handleChangeStartStation}
                 className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
               />
             </Form.Item>
@@ -79,11 +104,16 @@ export const BiikeRouteDetailModal = ({
 
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Trạm cuối</span>
-            <Form.Item name="destinationName">
+            <Form.Item name="destinationId">
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                defaultValue="1"
-                options={[{ label: "Chung cư SKY 9", value: "1" }]}
+                options={data?.data
+                  .filter((station) => station.stationId !== startStationId)
+                  .map((station) => ({
+                    value: station.stationId,
+                    label: station.name,
+                  }))}
+                onChange={handleChangeEndStation}
                 className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
               />
             </Form.Item>

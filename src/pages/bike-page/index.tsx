@@ -23,7 +23,7 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10,
   });
 
@@ -67,7 +67,7 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
 
   return (
     <div className="biike-bike-page px-4">
-      <div className="biike-bike-tools">
+      {/* <div className="biike-bike-tools">
         <Select
           suffixIcon={<CaretDownOutlined className="text-gray-500" />}
           defaultValue="all"
@@ -78,7 +78,7 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
             { label: "Đã xác minh không hợp lệ", value: "block" },
           ]}
         />
-      </div>
+      </div> */}
       <div className="biike-bike-content mt-4">
         {data?.data.map((bike) => (
           <div className="bike-item bg-white px-8 py-4 content-center">

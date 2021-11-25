@@ -2,6 +2,7 @@ import { CaretDownOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Select } from "antd";
 import { useEffect } from "react";
 import { Station } from "src/services/api/station";
+import moment from "moment";
 import "./index.scss";
 
 interface BiikeStationDetailModalProps {
@@ -44,14 +45,14 @@ export const BiikeStationDetailModal = ({
     >
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="station-detail-modal-content">
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Thời gian tạo</span>
-            <Form.Item name="createdDate">
-              <Input
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                disabled
-              />
-            </Form.Item>
+          <div className=" text-sm ">
+            <span className="text-gray-500 font-medium">Thời gian tạo</span>
+            <br />
+            <span className="text-gray-500">
+              {moment(station?.createdDate).format("DD/MM/YYYY HH:mm")}
+            </span>
+            <br />
+            <br />
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Tên trạm</span>

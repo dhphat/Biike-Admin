@@ -23,7 +23,7 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10,
   });
 

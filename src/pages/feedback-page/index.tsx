@@ -69,7 +69,7 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
 
   return (
     <div className="biike-feedback-page px-4">
-      <div className="biike-feedback-tools">
+      {/* <div className="biike-feedback-tools">
         <Select
           suffixIcon={<CaretDownOutlined className="text-gray-500" />}
           defaultValue={-1}
@@ -83,7 +83,7 @@ export const BiikeFeedbackPage = (props: BiikeFeedBackPageProps) => {
           ]}
           onChange={handleTripStarChange}
         />
-      </div>
+      </div> */}
       <div className="biike-feedback-content mt-4">
         {data?.data.map((feedback) => (
           <div className="feedback-item bg-white px-8 py-4 content-center">

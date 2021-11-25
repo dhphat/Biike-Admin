@@ -1,20 +1,4 @@
-import {
-  AimOutlined,
-  EnvironmentOutlined,
-  MoreOutlined,
-  StarFilled,
-} from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Tag,
-  Timeline,
-} from "antd";
+import { Button, Col, Divider, Form, Modal, Row, Tag, Timeline } from "antd";
 import { useEffect } from "react";
 import { Trip } from "src/services/api/trip";
 import { TRIP_STATUS } from "src/utils/constants";
@@ -97,24 +81,26 @@ export const BiikeTripDetailModal = ({
             </Col>
 
             <Col span={12}>
-              <div className="ml-auto flex pa-10 items-center">
-                {trip?.bikerId == null ? (
-                  <div className="flex-col flex mr-2 font-sans ">
-                    <span className="text-gray-500 ">Biker </span>
-                    <span className="text-base">Đang tìm...</span>
-                  </div>
-                ) : (
-                  <div className="flex-col flex mr-2 font-sans ">
-                    <span className="text-gray-500 ">
-                      Biker{" "}
-                      <Tag color="green">Biển số xe: {trip?.plateNumber}</Tag>
-                    </span>
-                    <span className="text-base font-bold">
-                      {trip?.bikerFullname}
-                    </span>
-                  </div>
-                )}
-              </div>
+              {trip?.status != 5 && (
+                <div className="ml-auto flex pa-10 items-center">
+                  {trip?.bikerId == null ? (
+                    <div className="flex-col flex mr-2 font-sans ">
+                      <span className="text-gray-500 ">Biker </span>
+                      <span className="text-base">Chưa có người chở</span>
+                    </div>
+                  ) : (
+                    <div className="flex-col flex mr-2 font-sans ">
+                      <span className="text-gray-500 ">
+                        Biker{" "}
+                        <Tag color="green">Biển số xe: {trip?.plateNumber}</Tag>
+                      </span>
+                      <span className="text-base font-bold">
+                        {trip?.bikerFullname}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </Col>
           </Row>
           <Divider />

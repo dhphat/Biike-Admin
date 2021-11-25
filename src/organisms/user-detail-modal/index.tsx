@@ -6,6 +6,7 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Form, Modal, Tag } from "antd";
+import moment from "moment";
 import { useEffect } from "react";
 import { User } from "src/services/api/user";
 import { GENDER } from "src/utils/constants";
@@ -142,7 +143,7 @@ export const BiikeUserDetailModal = ({
 
           <div className="user-email text-sm text-gray-400">
             <span>Thời gian tạo: </span>
-            {user.createdDate}
+            {moment(user?.createdDate).format("DD/MM/YYYY HH:mm")}
           </div>
           <br />
           {/* createdDate

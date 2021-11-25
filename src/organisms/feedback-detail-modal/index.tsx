@@ -76,7 +76,11 @@ export const BiikeFeedbackDetailModal = ({
           <div className="user-email text-sm ">
             <span className="text-gray-1000 font-bold">Điểm tip</span>
             <br />
-            {feedback.tripTip}
+            {feedback.tripTip == null ? (
+              <span className="text-gray-1000">Không có</span>
+            ) : (
+              <span className="text-gray-1000">{feedback.tripTip}</span>
+            )}
           </div>
 
           <Divider />

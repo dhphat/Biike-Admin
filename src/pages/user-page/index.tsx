@@ -17,7 +17,7 @@ export const BiikeUserPage = (props: BiikeUserPageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10,
   });
 
@@ -74,7 +74,7 @@ export const BiikeUserPage = (props: BiikeUserPageProps) => {
 
   return (
     <div className="biike-user-page px-4">
-      <div className="biike-user-tools">
+      {/* <div className="biike-user-tools">
         <Input
           placeholder="Nhập tên, email, số điện thoại"
           className="max-w-sm rounded min-h-10"
@@ -82,7 +82,7 @@ export const BiikeUserPage = (props: BiikeUserPageProps) => {
         <Button type="primary" value="large" className="rounded px-8 min-h-10">
           Tìm kiếm
         </Button>
-      </div>
+      </div> */}
       <div className="biike-user-content mt-4">
         {data?.data.map((user, index) => (
           <div

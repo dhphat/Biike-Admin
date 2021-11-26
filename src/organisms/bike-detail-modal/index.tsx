@@ -1,6 +1,19 @@
-import { Button, Divider, Form, Modal, Tag, Image, Row, Col } from "antd";
+import { CaretDownOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Divider,
+  Form,
+  Modal,
+  Tag,
+  Image,
+  Row,
+  Col,
+  Select,
+} from "antd";
 import { useEffect } from "react";
-import { Bike } from "src/services/api/bike";
+import { useMutation } from "react-query";
+import { Bike, bikeQueryFns } from "src/services/api/bike";
+import { BIKE_STATUS } from "src/utils/constants";
 import "./index.scss";
 
 interface BiikeBikeDetailModalProps {
@@ -33,6 +46,16 @@ export const BiikeBikeDetailModal = ({
     onOk?.(bike.bikeId, values, handleCloseModal);
   };
 
+  //verify valid
+  const handleVerifyBikeIsValid = (values: any) => {
+    onOk?.(bike.bikeId, values, handleCloseModal);
+  };
+
+  //verify invalid
+  const handleVerifyBikeIsInvalid = (values: any) => {
+    onOk?.(bike.bikeId, values, handleCloseModal);
+  };
+
   return (
     <Modal
       width={600}
@@ -42,7 +65,7 @@ export const BiikeBikeDetailModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form>
         <div className="bike-detail-modal-content">
           <div className="site-card-wrapper">
             <Row gutter={16}>
@@ -51,9 +74,15 @@ export const BiikeBikeDetailModal = ({
                   <div className="flex-col flex font-sans font-bold">
                     <span>Biển số đăng ký</span>
                     <span className="text-lg font-bold text-3xl">
-                      {bike?.plateNumber} <br />
-                      {true === true && (
+                      {bike.plateNumber} <br />
+                      {bike.bikeStatus == BIKE_STATUS.UN_VERIFIED && (
+                        <Tag color="processing">Chưa xác minh</Tag>
+                      )}
+                      {bike.bikeStatus == BIKE_STATUS.SUCCESS_VERIFIED && (
                         <Tag color="success">Đã xác minh hợp lệ</Tag>
+                      )}
+                      {bike.bikeStatus == BIKE_STATUS.FAIL_VERIFIED && (
+                        <Tag color="error">Đã xác minh không hợp lệ</Tag>
                       )}
                     </span>
                     <span></span>
@@ -84,14 +113,14 @@ export const BiikeBikeDetailModal = ({
                 <div className="user-email text-sm ">
                   <span className="text-gray-1000 font-bold">Loại xe</span>
                   <br />
-                  {bike.bikeOwner}
+                  {bike.bikeType}
                 </div>
                 <br />
 
                 <div className="user-email text-sm ">
                   <span className="text-gray-1000 font-bold">Dung tích xe</span>
                   <br />
-                  {bike.bikeOwner}
+                  {bike.bikeVolume}
                 </div>
               </Col>
               <Col span={14}>
@@ -154,23 +183,26 @@ export const BiikeBikeDetailModal = ({
 
           <div className="bike-detail-modal-tools">
             <Button onClick={handleCloseModal}>Thoát</Button>
-
-            {false === false && (
+            {bike.bikeStatus !== BIKE_STATUS.FAIL_VERIFIED && (
               <Button
                 type="text"
                 className="rounded"
                 htmlType="submit"
-                loading={isUpdating}
+                onClick={() =>
+                  handleVerifyBikeIsValid({ verificationResult: false })
+                }
               >
                 Xác minh không hợp lệ
               </Button>
             )}
-            {false === false && (
+            {bike.bikeStatus !== BIKE_STATUS.SUCCESS_VERIFIED && (
               <Button
                 type="primary"
                 className="rounded"
                 htmlType="submit"
-                loading={isUpdating}
+                onClick={() =>
+                  handleVerifyBikeIsInvalid({ verificationResult: true })
+                }
               >
                 Xác minh hợp lệ
               </Button>

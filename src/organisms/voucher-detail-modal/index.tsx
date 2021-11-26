@@ -25,16 +25,25 @@ import {
 import { RcFile } from "antd/lib/upload";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Voucher, voucherQueryFns } from "src/services/api/voucher";
-import { VoucherCategory } from "src/services/api/voucher-category";
+import {
+  VoucherCategory,
+  voucherCategoryQueryFns,
+} from "src/services/api/voucher-category";
 import "./index.scss";
 
 interface BiikeVoucherDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
   voucher?: Voucher;
   voucherCategory?: VoucherCategory;
-  onOk?: (id: number, data: any, closeModalCallback?: () => void) => void;
+  onOk?: (
+    id: number,
+    data: any,
+    newBanners: RcFile[],
+    removedBanners: string[],
+    closeModalCallback?: () => void
+  ) => void;
   isUpdating?: boolean;
 }
 
@@ -52,58 +61,77 @@ export const BiikeVoucherDetailModal = ({
     if (visible && voucher) {
       form.setFieldsValue(voucher);
       setBannerFileList(
-        voucher.voucherImages.map((image, index) => ({
-          uid: index,
-          status: "done",
-          url: image,
+        voucher.voucherImages.map((image) => ({
+          uid: `${image.voucherImageId}`,
+          name: `Banner ${image.voucherImageId}`,
+          url: image.voucherImageUrl,
         }))
       );
-      //   {
-      //     uid: -1,
-      //     name: "image.png",
-      //     status: "done",
-      //     url: "https://firebasestorage.googleapis.com/v0/b/biike-c6a70.appspot.com/o/voucher%2Fimage_20211121_210217_049156.png?alt=media&token=c9a636c6-d7cd-433f-8d2e-1879417fba7e",
     }
   }, [visible]);
 
   const handleCloseModal = () => {
     voucher && toggleVisible(voucher.voucherId);
+    setRemovedBannerIds([]);
+    setNewBannerFileList([]);
   };
 
   const handleSubmitForm = (values: any) => {
-    voucher && onOk?.(voucher.voucherId, values, handleCloseModal);
+    voucher &&
+      onOk?.(
+        voucher.voucherId,
+        values,
+        newBannerFileList,
+        removedBannerIds,
+        handleCloseModal
+      );
   };
 
-  //upload banner
+  //upload banner UploadProps<any>["fileList"]
   const [bannerFileList, setBannerFileList] = useState<
     UploadProps<any>["fileList"]
   >([]);
 
-  const [bannerUrlList, setBannerUrlList] = useState<
-    { uid: string; url: string }[]
-  >([]);
+  const [newBannerFileList, setNewBannerFileList] = useState<RcFile[]>([]);
 
-  const uploadImageMutation = useMutation(voucherQueryFns.uploadVoucherBanner);
+  const [removedBannerIds, setRemovedBannerIds] = useState<string[]>([]);
 
   const handleChangeUploader: UploadProps<any>["onChange"] = ({ fileList }) => {
     setBannerFileList(fileList);
 
-    const successFiles = fileList.filter((file) => file.status === "done");
+    // const successFiles = fileList.filter((file) => file.status === "done");
 
-    const removedBannerFiles = bannerUrlList.filter(
-      (banner) => !successFiles.find((file) => banner.uid === file.uid)
+    // const removedBannerFiles = bannerList.filter(
+    //   (banner) => !successFiles.find((file) => banner.uid === file.uid)
+    // );
+
+    // const newBannerFiles = successFiles.filter(
+    //   (file) =>
+    //     !bannerList.find((banner) => file.uid === banner.uid) &&
+    //     !!file.originFileObj
+    // );
+
+    // setBannerList((prev) => [
+    //   ...prev.filter(
+    //     (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
+    //   ),
+    //   ...newBannerFiles.map((nfile) => ({
+    //     uid: nfile.uid,
+    //     file: nfile.originFileObj!,
+    //   })),
+    // ]);
+  };
+
+  const handleRemoveBanner = (removedBannerId: string) => {
+    if (!newBannerFileList.find((banner) => banner.uid === removedBannerId)) {
+      setRemovedBannerIds((prev) => [
+        ...prev.filter((id) => id !== removedBannerId),
+        removedBannerId,
+      ]);
+    }
+    setNewBannerFileList((prev) =>
+      prev.filter((banner) => banner.uid !== removedBannerId)
     );
-
-    const newBannerFiles = successFiles.filter(
-      (file) => !bannerUrlList.find((banner) => file.uid === banner.uid)
-    );
-
-    setBannerUrlList((prev) => [
-      ...prev.filter(
-        (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
-      ),
-      ...newBannerFiles.map((nfile) => ({ uid: nfile.uid, url: "" })),
-    ]);
   };
 
   const handleUploadBanner: UploadProps<any>["customRequest"] = ({
@@ -111,22 +139,16 @@ export const BiikeVoucherDetailModal = ({
     onSuccess,
     onError,
   }) => {
-    const formData = new FormData();
-    formData.append("imageType", "3");
-    formData.append("imageList", file);
-    uploadImageMutation
-      .mutateAsync(formData)
-      .then((res) => {
-        const bannerUrl = { uid: (file as RcFile).uid, url: res.data[0] };
-        setBannerUrlList([
-          ...bannerUrlList.filter((banner) => banner.uid != bannerUrl.uid),
-          bannerUrl,
-        ]);
-        onSuccess?.(undefined, new XMLHttpRequest());
-      })
-      .catch((err) => {
-        onError?.(err);
-      });
+    try {
+      const newBannerFile = file as RcFile;
+      setNewBannerFileList((prev) => [
+        ...prev.filter((banner) => banner.uid != newBannerFile.uid),
+        newBannerFile,
+      ]);
+      onSuccess?.(undefined, new XMLHttpRequest());
+    } catch (error: any) {
+      onError?.(error);
+    }
   };
 
   //date picker
@@ -134,6 +156,11 @@ export const BiikeVoucherDetailModal = ({
   const dateFormat = "YYYY/MM/DD";
 
   const { TextArea } = Input;
+
+  // load list voucher category
+  const { data } = useQuery(["voucherCategories"], () =>
+    voucherCategoryQueryFns.voucherCategories({ limit: 10, page: 1 })
+  );
 
   return (
     <Modal
@@ -176,9 +203,14 @@ export const BiikeVoucherDetailModal = ({
                 <Form.Item name="voucherCategoryId">
                   <Select
                     suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                    // defaultValue="1"
-
-                    options={[{ label: "Danh mục ưu đãi", value: "1" }]}
+                    options={data?.data
+                      .filter(
+                        (voucherCategory) => voucherCategory.voucherCategoryId
+                      )
+                      .map((voucherCategory) => ({
+                        value: voucherCategory.voucherCategoryId,
+                        label: voucherCategory.categoryName,
+                      }))}
                     className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
                   />
                 </Form.Item>
@@ -257,7 +289,7 @@ export const BiikeVoucherDetailModal = ({
             <span className="text-gray-500">Banner</span>
             <br />
 
-            {voucher?.voucherImages.map((image, index) => (
+            {/* {voucher?.voucherImages.map((image, index) => (
               <div key={index}>
                 <Image
                   className="mt-2 mb-2"
@@ -265,7 +297,7 @@ export const BiikeVoucherDetailModal = ({
                   src={image.voucherImageUrl}
                 />
               </div>
-            ))}
+            ))} */}
 
             <br />
             <Upload
@@ -280,12 +312,17 @@ export const BiikeVoucherDetailModal = ({
               //   },
               // ]}
 
-              listType="picture"
+              listType="picture-card"
               customRequest={handleUploadBanner}
               fileList={bannerFileList}
               onChange={handleChangeUploader}
+              onRemove={({ uid }) => handleRemoveBanner(uid)}
             >
-              <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
+              <div>
+                <UploadOutlined />
+                <div>Tải ảnh lên</div>
+              </div>
+              {/* <Button icon={<UploadOutlined />}></Button> */}
             </Upload>
           </div>
 

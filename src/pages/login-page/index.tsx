@@ -1,5 +1,5 @@
 import { Button, Input } from "antd";
-import { ChangeEventHandler, useState } from "react";
+import { ChangeEventHandler, KeyboardEvent, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { routes } from "src/routes";
 import { useAuth } from "src/services/AuthProvider";
@@ -49,6 +49,12 @@ export const BiikeLoginPage = (props: BiikeLoginPageProps) => {
       .finally(() => setIsLoading(false));
   }
 
+  const handleKeyDown = ({ key }: KeyboardEvent<HTMLInputElement>) => {
+    if (key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <div className="login-page">
       {/* <Input placeholder="Basic usage" className="test" /> */}
@@ -63,6 +69,7 @@ export const BiikeLoginPage = (props: BiikeLoginPageProps) => {
           placeholder="Nhập email"
           value={email}
           onChange={handleInputEmail}
+          onKeyDown={handleKeyDown}
         />
         <div className="text-white font-sans text-xs mt-4">Mật khẩu</div>
         <Input.Password
@@ -70,6 +77,7 @@ export const BiikeLoginPage = (props: BiikeLoginPageProps) => {
           placeholder="Nhập mật khẩu"
           value={password}
           onChange={handleInputPassword}
+          onKeyDown={handleKeyDown}
         />
         <Button
           className="mx-auto mt-8 px-4 primary-text-color text-xs font-sans font-semibold rounded"

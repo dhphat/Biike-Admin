@@ -9,6 +9,8 @@ export const bikeQueryFns = {
   bikes: (params: BikesParams): Promise<BikesResponse> =>
     fetchApis.GET("/bikes", params),
   bike: (id: number): Promise<BikeResponse> => fetchApis.GET(`/bike/${id}`),
+  updateBike: ([id, body]: [number, object]): Promise<BikeResponse> =>
+    fetchApis.PUT(`/bikes/${id}`, body),
   // deleteBike: (id: number) => fetchApis.DELETE(`/bikes/${id}`),
 };
 
@@ -23,6 +25,11 @@ export interface Bike {
   color: string;
   brand: string;
   createdDate: string;
+  bikeType: string;
+  bikeVolume: string;
+  bikeStatus: number;
+  verificationResult: boolean;
+  failedVerificationReason: string;
 }
 
 export interface BikesResponse extends PaginationQueryResponse<Array<Bike>> {}

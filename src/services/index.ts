@@ -74,10 +74,11 @@ export const fetchApis = {
     });
     return response.json();
   },
-  DELETE: async (path: string, params?: object) => {
+  DELETE: async (path: string, body?: object, params?: object) => {
     const response = await fetch(baseUrl + path + getStringParams(params), {
       method: "DELETE",
       headers: getHeaders(),
+      body: JSON.stringify(body),
     });
     return response.json();
   },

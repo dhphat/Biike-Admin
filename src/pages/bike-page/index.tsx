@@ -7,10 +7,10 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Bike, bikeQueryFns } from "src/services/api/bike";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useState } from "react";
 import { BiikeBikeDetailModal } from "src/organisms/bike-detail-modal";
-
+import { BIKE_STATUS } from "src/utils/constants";
 import "./index.scss";
 
 interface BikeDetailModal {
@@ -65,6 +65,19 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
     setBikeDetailModal({ openId: data.bikeId, data });
   };
 
+  const updateBikeMutation = useMutation(bikeQueryFns.updateBike);
+
+  const handleUpdateBike = (
+    id: number,
+    values: any,
+    closeModalCallback?: () => void
+  ) => {
+    updateBikeMutation.mutateAsync([id, values]).then((res) => {
+      closeModalCallback?.();
+      refetch();
+    });
+  };
+
   return (
     <div className="biike-bike-page px-4">
       {/* <div className="biike-bike-tools">
@@ -86,8 +99,14 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
               <div className="item-details text-gray-500 ">
                 <div className="bike-name text-base font-bold">
                   <FieldNumberOutlined /> {bike.plateNumber}{" "}
-                  {true === true && (
+                  {bike.bikeStatus == BIKE_STATUS.UN_VERIFIED && (
+                    <Tag color="processing">Chưa xác minh</Tag>
+                  )}
+                  {bike.bikeStatus == BIKE_STATUS.SUCCESS_VERIFIED && (
                     <Tag color="success">Đã xác minh hợp lệ</Tag>
+                  )}
+                  {bike.bikeStatus == BIKE_STATUS.FAIL_VERIFIED && (
+                    <Tag color="error">Đã xác minh không hợp lệ</Tag>
                   )}
                 </div>
                 <div className="bike-address text-sm">
@@ -112,6 +131,7 @@ export const BiikeBikePage = (props: BiikeBikePageProps) => {
                   toggleBikeDetailModalVisible,
                 ]}
                 bike={bike}
+                onOk={handleUpdateBike}
               />
               {/* <Button type="primary" danger className="rounded">
                 Xóa

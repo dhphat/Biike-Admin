@@ -8,6 +8,7 @@ import { BiikeVoucherDetailModal } from "src/organisms/voucher-detail-modal";
 import { BiikeVoucherCodeModal } from "src/organisms/voucher-code-modal";
 import "./index.scss";
 import { useState } from "react";
+import { RcFile } from "antd/lib/upload";
 
 interface VoucherDetailModal {
   openId: number;
@@ -86,17 +87,53 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
     setVoucherDetailModal({ openId: data.voucherId, data });
   };
 
+  const updateVoucherBannersMutation = useMutation(
+    voucherQueryFns.updateVoucherBanners
+  );
+
   const updateVoucherMutation = useMutation(voucherQueryFns.updateVoucher);
+
+  const uploadImageMutation = useMutation(voucherQueryFns.uploadVoucherBanner);
+
+  const removeVoucherBannersMutation = useMutation(
+    voucherQueryFns.removeVoucherBanners
+  );
 
   const handleUpdateVoucher = (
     id: number,
     values: any,
+    newBanners: RcFile[],
+    removedBannerIds: string[],
     closeModalCallback?: () => void
   ) => {
-    updateVoucherMutation.mutateAsync([id, values]).then((res) => {
-      closeModalCallback?.();
-      refetch();
+    const formData = new FormData();
+    formData.append("imageType", "3");
+    newBanners.forEach((banner) => {
+      formData.append("imageList", banner);
     });
+    if (newBanners.length) {
+      uploadImageMutation.mutateAsync(formData).then((res) => {
+        const bannerUrls: string[] = res.data;
+        updateVoucherBannersMutation
+          .mutateAsync([id, bannerUrls])
+          .then((res) => {
+            refetch();
+          });
+      });
+    }
+    if (removedBannerIds.length) {
+      removeVoucherBannersMutation
+        .mutateAsync([id, removedBannerIds])
+        .then((res) => {
+          refetch();
+        });
+    }
+    updateVoucherMutation
+      .mutateAsync([id, { ...values, addressIds: [1] }])
+      .then((res) => {
+        closeModalCallback?.();
+        refetch();
+      });
   };
 
   // update voucher code
@@ -157,13 +194,20 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
       />
 
       <div className="biike-voucher-content mt-4">
-        {data?.data.map((voucher) => (
-          <div className="voucher-item bg-white content-center rounded">
+        {data?.data.map((voucher, index) => (
+          <div
+            key={index}
+            className="voucher-item bg-white content-center rounded"
+          >
             <Image
               preview={false}
               height={140}
+              width={200}
               className="voucher-image rounded"
-              src="https://cdn2.yame.vn/cimg/images/f7fbd2bf-4fca-0100-4145-00186cf38d33.jpg"
+              src={
+                voucher.voucherImages[0]?.voucherImageUrl ||
+                "https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              }
             />
             <div className="item-details text-gray-500 ml-8">
               <div className="voucher-email text-sm">

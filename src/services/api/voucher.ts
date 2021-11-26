@@ -14,6 +14,16 @@ export const voucherQueryFns = {
     fetchApis.POST(`/vouchers`, body),
   uploadVoucherBanner: (body: FormData): Promise<any> =>
     fetchApis.POST_FILE(`/images`, body),
+  removeVoucherBanners: ([id, bannerIds]: [number, string[]]): Promise<any> =>
+    fetchApis.DELETE(`/vouchers/images`, {
+      voucherId: id,
+      voucherImageIds: bannerIds,
+    }),
+  updateVoucherBanners: ([id, body]: [
+    number,
+    string[]
+  ]): Promise<VoucherResponse> =>
+    fetchApis.POST(`/vouchers/${id}/images`, body),
   updateVoucher: ([id, body]: [number, object]): Promise<VoucherResponse> =>
     fetchApis.PUT(`/vouchers/${id}`, body),
   deleteVoucher: (id: number) => fetchApis.DELETE(`/vouchers/${id}`),

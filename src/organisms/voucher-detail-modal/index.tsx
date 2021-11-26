@@ -185,14 +185,30 @@ export const BiikeVoucherDetailModal = ({
 
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Tên ưu đãi</span>
-                <Form.Item name="voucherName">
+                <Form.Item
+                  name="voucherName"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập tên ưu đãi",
+                    },
+                  ]}
+                >
                   <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
                 </Form.Item>
               </div>
 
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Thương hiệu</span>
-                <Form.Item name="brand">
+                <Form.Item
+                  name="brand"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập thương hiệu",
+                    },
+                  ]}
+                >
                   <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
                 </Form.Item>
               </div>
@@ -200,7 +216,15 @@ export const BiikeVoucherDetailModal = ({
             <Col span={12}>
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Danh mục ưu đãi</span>
-                <Form.Item name="voucherCategoryId">
+                <Form.Item
+                  name="voucherCategoryId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn danh mục",
+                    },
+                  ]}
+                >
                   <Select
                     suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                     options={data?.data
@@ -229,7 +253,15 @@ export const BiikeVoucherDetailModal = ({
               </div>
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Điểm để đổi</span>
-                <Form.Item name="amountOfPoint">
+                <Form.Item
+                  name="amountOfPoint"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập điểm",
+                    },
+                  ]}
+                >
                   <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
                 </Form.Item>
               </div>
@@ -239,7 +271,15 @@ export const BiikeVoucherDetailModal = ({
           <Divider />
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Mô tả</span>
-            <Form.Item name="description">
+            <Form.Item
+              name="description"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập mô tả",
+                },
+              ]}
+            >
               <TextArea
                 className="mt-2"
                 autoSize={{ minRows: 7, maxRows: 7 }}
@@ -250,7 +290,15 @@ export const BiikeVoucherDetailModal = ({
 
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Điều kiện sử dụng</span>
-            <Form.Item name="termsAndConditions">
+            <Form.Item
+              name="termsAndConditions"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập điều kiện",
+                },
+              ]}
+            >
               <TextArea
                 className="mt-2"
                 autoSize={{ minRows: 7, maxRows: 7 }}

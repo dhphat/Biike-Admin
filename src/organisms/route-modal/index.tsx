@@ -57,7 +57,15 @@ export const BiikeRouteModal = ({
         <div className="route-modal-content">
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Khu vực</span>
-            <Form.Item name="areaId">
+            <Form.Item
+              name="areaId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn khu vực",
+                },
+              ]}
+            >
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                 // defaultValue="1"
@@ -68,7 +76,15 @@ export const BiikeRouteModal = ({
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Trạm đầu</span>
-            <Form.Item name="departureId">
+            <Form.Item
+              name="departureId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạm đầu",
+                },
+              ]}
+            >
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                 options={data?.data
@@ -84,7 +100,15 @@ export const BiikeRouteModal = ({
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Trạm cuối</span>
-            <Form.Item name="destinationId">
+            <Form.Item
+              name="destinationId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạm cuối",
+                },
+              ]}
+            >
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                 options={data?.data
@@ -100,7 +124,15 @@ export const BiikeRouteModal = ({
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Điểm mặc định</span>
-            <Form.Item name="defaultPoint">
+            <Form.Item
+              name="defaultPoint"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập điểm mặc định",
+                },
+              ]}
+            >
               <InputNumber
                 className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
                 min="1"

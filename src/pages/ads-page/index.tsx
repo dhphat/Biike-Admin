@@ -2,7 +2,10 @@ import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Button, Image, Modal, Divider, Pagination, Tag } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import { useMutation, useQuery } from "react-query";
-import { Advertising, advertisingQueryFns } from "src/services/api/advertising";
+import {
+  Advertising,
+  advertisingQueryFns,
+} from "src/services/api/advertisement";
 import { BiikeAdvertisingModal } from "src/organisms/advertising-modal";
 import { BiikeAdvertisingDetailModal } from "src/organisms/advertising-detail-modal";
 import "./index.scss";

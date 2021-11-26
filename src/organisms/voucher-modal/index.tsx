@@ -174,14 +174,30 @@ export const BiikeVoucherModal = ({
         <div className="voucher-modal-content">
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="voucherName">
+              <Form.Item
+                name="voucherName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên ưu đãi",
+                  },
+                ]}
+              >
                 <div className=" text-sm font-medium ">
                   <span className="text-gray-500">Tên ưu đãi</span>
 
                   <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
                 </div>
               </Form.Item>
-              <Form.Item name="brand">
+              <Form.Item
+                name="brand"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên thương hiệu",
+                  },
+                ]}
+              >
                 <div className=" text-sm font-medium ">
                   <span className="text-gray-500">Thương hiệu</span>
 
@@ -190,7 +206,15 @@ export const BiikeVoucherModal = ({
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="VoucherCategoryId">
+              <Form.Item
+                name="VoucherCategoryId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn danh mục",
+                  },
+                ]}
+              >
                 <div className=" text-sm font-medium ">
                   <span className="text-gray-500">Danh mục ưu đãi</span>
 
@@ -209,7 +233,15 @@ export const BiikeVoucherModal = ({
                 <RangePicker className="mt-2" />
               </div>
 
-              <Form.Item name="amountOfPoint">
+              <Form.Item
+                name="amountOfPoint"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập điểm",
+                  },
+                ]}
+              >
                 <div className=" text-sm font-medium">
                   <span className="text-gray-500">Điểm để đổi</span>
                   <br />
@@ -219,7 +251,15 @@ export const BiikeVoucherModal = ({
             </Col>
           </Row>
           <Divider />
-          <Form.Item name="description">
+          <Form.Item
+            name="description"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mô tả",
+              },
+            ]}
+          >
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Mô tả</span>
 
@@ -230,7 +270,15 @@ export const BiikeVoucherModal = ({
               />
             </div>
           </Form.Item>
-          <Form.Item name="termsAndConditions">
+          <Form.Item
+            name="termsAndConditions"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập điều kiện",
+              },
+            ]}
+          >
             <div className=" text-sm font-medium ">
               <span className="text-gray-500">Điều kiện sử dụng</span>
 

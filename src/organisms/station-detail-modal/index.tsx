@@ -56,14 +56,30 @@ export const BiikeStationDetailModal = ({
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Tên trạm</span>
-            <Form.Item name="name">
+            <Form.Item
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập tên trạm",
+                },
+              ]}
+            >
               <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
             </Form.Item>
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Tọa độ</span>
             <div className="flex flex-column mt-2">
-              <Form.Item name="coordinate">
+              <Form.Item
+                name="coordinate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tọa độ",
+                  },
+                ]}
+              >
                 <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1 w-full" />
               </Form.Item>
               <Button
@@ -78,13 +94,29 @@ export const BiikeStationDetailModal = ({
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Địa chỉ</span>
-            <Form.Item name="address">
+            <Form.Item
+              name="address"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập địa chỉ",
+                },
+              ]}
+            >
               <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-4 text-blue-gray-500" />
             </Form.Item>
           </div>
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Khu vực</span>
-            <Form.Item name="areaId">
+            <Form.Item
+              name="areaId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn khu vực",
+                },
+              ]}
+            >
               <Select
                 suffixIcon={<CaretDownOutlined className="text-gray-500" />}
                 // defaultValue="1"

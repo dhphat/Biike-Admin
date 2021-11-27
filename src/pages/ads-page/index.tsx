@@ -3,22 +3,28 @@ import { Select, Button, Image, Modal, Divider, Pagination, Tag } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import { useMutation, useQuery } from "react-query";
 import {
-  Advertising,
-  advertisingQueryFns,
+  Advertisement,
+  advertisementQueryFns,
 } from "src/services/api/advertisement";
-import { BiikeAdvertisingModal } from "src/organisms/advertising-modal";
-import { BiikeAdvertisingDetailModal } from "src/organisms/advertising-detail-modal";
+import { BiikeAdvertisementModal } from "src/organisms/advertisement-modal";
+import { BiikeAdvertisementDetailModal } from "src/organisms/advertisement-detail-modal";
 import "./index.scss";
 import { useState } from "react";
+import { RcFile } from "antd/lib/upload";
 
-interface AdvertisingDetailModal {
+interface AdvertisementDetailModal {
   openId: number;
-  data?: Advertising;
+  data?: Advertisement;
 }
 
-interface BiikeAdsPageProps {}
+interface AdvertisementCodeModal {
+  openId: number;
+  data?: Advertisement;
+}
 
-export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
+interface BiikeAdvertisementPageProps {}
+
+export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
@@ -27,9 +33,9 @@ export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
   });
 
   const { data, isFetching, refetch } = useQuery(
-    ["advertisings", pagination.page, pagination.pageSize],
+    ["advertisements", pagination.page, pagination.pageSize],
     () =>
-      advertisingQueryFns.advertisings({
+      advertisementQueryFns.advertisements({
         page: pagination.page,
         limit: pagination.pageSize,
       }),
@@ -49,18 +55,20 @@ export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
   };
 
   // create
-  const [isCreateAdvertisingModalVisible, toggleCreateAdvertisingModalVisible] =
-    useToggle(false);
+  const [
+    isCreateAdvertisementModalVisible,
+    toggleCreateAdvertisementModalVisible,
+  ] = useToggle(false);
 
-  const createAdvertisingMutation = useMutation(
-    advertisingQueryFns.createAdvertising
+  const createAdvertisementMutation = useMutation(
+    advertisementQueryFns.createAdvertisement
   );
 
-  const handleCreateAdvertising = (
+  const handleCreateAdvertisement = (
     values: any,
     closeModalCallback?: () => void
   ) => {
-    createAdvertisingMutation.mutateAsync(values).then((res) => {
+    createAdvertisementMutation.mutateAsync(values).then((res) => {
       if (res.data) {
         closeModalCallback?.();
         refetch();
@@ -68,50 +76,88 @@ export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
     });
   };
 
-  // update
-  const [advertisingDetailModal, setAdvertisingDetailModal] =
-    useState<AdvertisingDetailModal>({
+  // update advertisement
+  const [advertisementDetailModal, setAdvertisementDetailModal] =
+    useState<AdvertisementDetailModal>({
       openId: -1,
     });
 
-  const toggleAdvertisingDetailModalVisible = (openId: number) => {
-    setAdvertisingDetailModal((prev) => ({
+  const toggleAdvertisementDetailModalVisible = (openId: number) => {
+    setAdvertisementDetailModal((prev) => ({
       ...prev,
       openId: prev.openId === openId ? -1 : openId,
     }));
   };
 
-  const openAdvertisingDetailModal = (data: Advertising) => {
-    setAdvertisingDetailModal({ openId: data.advertisingId, data });
+  const openAdvertisementDetailModal = (data: Advertisement) => {
+    setAdvertisementDetailModal({ openId: data.advertisementId, data });
   };
 
-  const updateAdvertisingMutation = useMutation(
-    advertisingQueryFns.updateAdvertising
+  const updateAdvertisementBannersMutation = useMutation(
+    advertisementQueryFns.updateAdvertisementBanners
   );
 
-  const handleUpdateAdvertising = (
+  const updateAdvertisementMutation = useMutation(
+    advertisementQueryFns.updateAdvertisement
+  );
+
+  const uploadImageMutation = useMutation(
+    advertisementQueryFns.uploadAdvertisementBanner
+  );
+
+  const removeAdvertisementBannersMutation = useMutation(
+    advertisementQueryFns.removeAdvertisementBanners
+  );
+
+  const handleUpdateAdvertisement = (
     id: number,
     values: any,
+    newBanners: RcFile[],
+    removedBannerIds: string[],
     closeModalCallback?: () => void
   ) => {
-    updateAdvertisingMutation.mutateAsync([id, values]).then((res) => {
-      closeModalCallback?.();
-      refetch();
+    const formData = new FormData();
+    formData.append("imageType", "3");
+    newBanners.forEach((banner) => {
+      formData.append("imageList", banner);
     });
+    if (newBanners.length) {
+      uploadImageMutation.mutateAsync(formData).then((res) => {
+        const bannerUrls: string[] = res.data;
+        updateAdvertisementBannersMutation
+          .mutateAsync([id, bannerUrls])
+          .then((res) => {
+            refetch();
+          });
+      });
+    }
+    if (removedBannerIds.length) {
+      removeAdvertisementBannersMutation
+        .mutateAsync([id, removedBannerIds])
+        .then((res) => {
+          refetch();
+        });
+    }
+    updateAdvertisementMutation
+      .mutateAsync([id, { ...values, addressIds: [1] }])
+      .then((res) => {
+        closeModalCallback?.();
+        refetch();
+      });
   };
 
   // delete
-  const deleteAdvertisingMutation = useMutation(
-    advertisingQueryFns.deleteAdvertising
+  const deleteAdvertisementMutation = useMutation(
+    advertisementQueryFns.deleteAdvertisement
   );
 
-  const handleDeleteAdvertising = (advertising: Advertising) => {
+  const handleDeleteAdvertisement = (advertisement: Advertisement) => {
     Modal.confirm({
       type: "confirm",
-      title: `Are you sure to change ${advertising.title}?`,
+      title: `Are you sure to change ${advertisement.title}?`,
       onOk: () => {
-        deleteAdvertisingMutation
-          .mutateAsync(advertising.advertisingId)
+        deleteAdvertisementMutation
+          .mutateAsync(advertisement.advertisementId)
           .then((res) => {
             console.log("delete ok!");
             refetch();
@@ -131,43 +177,48 @@ export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
         <Button
           type="primary"
           className="ml-auto rounded"
-          onClick={toggleCreateAdvertisingModalVisible}
+          onClick={toggleCreateAdvertisementModalVisible}
         >
           Thêm quảng cáo
         </Button>
 
-        <BiikeAdvertisingModal
+        <BiikeAdvertisementModal
           visibleManage={[
-            isCreateAdvertisingModalVisible,
-            toggleCreateAdvertisingModalVisible,
+            isCreateAdvertisementModalVisible,
+            toggleCreateAdvertisementModalVisible,
           ]}
-          onOk={handleCreateAdvertising}
+          onOk={handleCreateAdvertisement}
         />
       </div>
       <div className="biike-ads-content mt-4">
-        {data?.data.map((advertising) => (
-          <div className="voucher-item bg-white content-center rounded">
+        {data?.data.map((advertisement, index) => (
+          <div
+            key={index}
+            className="advertisement-item bg-white content-center rounded"
+          >
             <Image
               preview={false}
               height={140}
-              className="voucher-image rounded"
+              className="advertisement-image rounded"
               src="https://cdn2.yame.vn/cimg/images/f7fbd2bf-4fca-0100-4145-00186cf38d33.jpg"
             />
             <div className="item-details text-gray-500 ml-8">
-              <div className="voucher-name text-base font-bold">
-                Shopee Lễ Hội Sale 11.11
+              <div className="advertisement-name text-base font-bold">
+                {advertisement.title}
               </div>
-              <div className="voucher-email text-sm">
-                <Tag color="blue">Shopee</Tag>
+              <div className="advertisement-email text-sm">
+                <Tag color="blue">{advertisement.brand}</Tag>
                 <Tag color="green">Đang hoạt động</Tag>
               </div>
-              <div className="voucher-phone text-sm">Lượt click: 1000</div>
+              <div className="advertisement-phone text-sm">
+                Lượt click: 1000
+              </div>
             </div>
             <div className="item-tools ml-auto mr-8">
               <Button
                 type="primary"
                 className="rounded"
-                onClick={() => openAdvertisingDetailModal(advertising)}
+                onClick={() => openAdvertisementDetailModal(advertisement)}
               >
                 Xem
               </Button>
@@ -179,70 +230,15 @@ export const BiikeAdsPage = (props: BiikeAdsPageProps) => {
           </div>
         ))}
 
-        <div className="voucher-item bg-white content-center rounded">
-          <Image
-            preview={false}
-            height={140}
-            className="voucher-image rounded"
-            src="https://cdn2.yame.vn/cimg/images/f7fbd2bf-4fca-0100-4145-00186cf38d33.jpg"
-          />
-          <div className="item-details text-gray-500 ml-8">
-            <div className="voucher-name text-base font-bold">
-              Shopee Lễ Hội Sale 11.11
-            </div>
-            <div className="voucher-email text-sm">
-              <Tag color="blue">Shopee</Tag>
-              <Tag color="red">Đang tắt</Tag>
-            </div>
-            <div className="voucher-phone text-sm">Lượt click: 1000</div>
-          </div>
-          <div className="item-tools ml-auto mr-8">
-            <Button type="primary" className="rounded">
-              Xem
-            </Button>
-
-            <Button type="primary" danger className="rounded">
-              Xóa
-            </Button>
-          </div>
-        </div>
-        <div className="voucher-item bg-white content-center rounded">
-          <Image
-            preview={false}
-            height={140}
-            className="voucher-image rounded"
-            src="https://cdn2.yame.vn/cimg/images/f7fbd2bf-4fca-0100-4145-00186cf38d33.jpg"
-          />
-          <div className="item-details text-gray-500 ml-8">
-            <div className="voucher-name text-base font-bold">
-              Shopee Lễ Hội Sale 11.11
-            </div>
-            <div className="voucher-email text-sm">
-              <Tag color="blue">Shopee</Tag>
-              <Tag color="green">Đang hoạt động</Tag>
-            </div>
-            <div className="voucher-phone text-sm">Lượt click: 1000</div>
-          </div>
-          <div className="item-tools ml-auto mr-8">
-            <Button type="primary" className="rounded">
-              Xem
-            </Button>
-
-            <Button type="primary" danger className="rounded">
-              Xóa
-            </Button>
-          </div>
-        </div>
-
-        <BiikeAdvertisingDetailModal
+        <BiikeAdvertisementDetailModal
           visibleManage={[
-            advertisingDetailModal.openId ===
-              advertisingDetailModal.data?.advertisingId,
-            toggleAdvertisingDetailModalVisible,
+            advertisementDetailModal.openId ===
+              advertisementDetailModal.data?.advertisementId,
+            toggleAdvertisementDetailModalVisible,
           ]}
-          advertising={advertisingDetailModal.data}
-          onOk={handleUpdateAdvertising}
-          isUpdating={updateAdvertisingMutation.isLoading}
+          advertisement={advertisementDetailModal.data}
+          onOk={handleUpdateAdvertisement}
+          isUpdating={updateAdvertisementMutation.isLoading}
         />
 
         <Divider />

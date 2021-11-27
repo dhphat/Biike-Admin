@@ -14,7 +14,7 @@ import { BiikeAdminPage } from "src/pages/admin-page";
 import { BiikeNotificationPage } from "src/pages/notification-page";
 import { BiikeStationPage } from "src/pages/station-page";
 import { BiikeTripPage } from "src/pages/trip-page";
-import { BiikeAdsPage } from "src/pages/ads-page";
+import { BiikeAdvertisementPage } from "src/pages/ads-page";
 import { BiikeVoucherCategoryPage } from "src/pages/voucher-category-page";
 
 interface BiikeRoute {
@@ -149,7 +149,7 @@ export const routes: BiikeMapRoute[] = [
     privateOnly: true,
     layout: BiikeDefaultLayout,
     nest: [
-      { name: "Quảng cáo", path: "/ads", component: BiikeAdsPage },
+      { name: "Quảng cáo", path: "/ads", component: BiikeAdvertisementPage },
 
       { name: "Ưu đãi", path: "/voucher", component: BiikeVoucherPage },
       {

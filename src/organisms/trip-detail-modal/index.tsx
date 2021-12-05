@@ -4,6 +4,14 @@ import { Trip } from "src/services/api/trip";
 import { TRIP_STATUS } from "src/utils/constants";
 import moment from "moment";
 import "./index.scss";
+import {
+  CaretRightOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  SyncOutlined,
+} from "@ant-design/icons";
 
 interface BiikeTripDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
@@ -50,10 +58,40 @@ export const BiikeTripDetailModal = ({
               <div className=" text-sm">
                 <span className="text-gray-500">ID: {trip?.tripId}</span>
               </div>
-              <Tag color="volcano">
-                {trip?.isScheduled ? "Chuyến đặt lịch" : "Chuyến Now"}
-              </Tag>
-              <Tag color="blue">{TRIP_STATUS[trip?.status]}</Tag>
+
+              {trip?.isScheduled == true && <Tag color="#f50">Đặt lịch</Tag>}
+              {trip?.isScheduled == false && <Tag color="#108ee9">Ké now</Tag>}
+
+              {TRIP_STATUS[trip?.status] == "FINDING" && (
+                <Tag icon={<SyncOutlined spin />} color="processing">
+                  Đang tìm
+                </Tag>
+              )}
+              {TRIP_STATUS[trip?.status] == "MATCHED" && (
+                <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                  Đã ghép
+                </Tag>
+              )}
+              {TRIP_STATUS[trip?.status] == "WAITING" && (
+                <Tag icon={<ClockCircleOutlined />} color="default">
+                  Đang chờ
+                </Tag>
+              )}
+              {TRIP_STATUS[trip?.status] == "STARTED" && (
+                <Tag icon={<CaretRightOutlined />} color="purple">
+                  Đã bắt đầu
+                </Tag>
+              )}
+              {TRIP_STATUS[trip?.status] == "FINISHED" && (
+                <Tag icon={<CheckCircleOutlined />} color="success">
+                  Hoàn thành
+                </Tag>
+              )}
+              {TRIP_STATUS[trip?.status] == "CANCELED" && (
+                <Tag icon={<CloseCircleOutlined />} color="error">
+                  Đã hủy
+                </Tag>
+              )}
             </Col>
             <Col span={12}>
               <div className=" text-sm">

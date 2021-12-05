@@ -14,6 +14,14 @@ import "./index.scss";
 import { useState } from "react";
 import { TRIP_STATUS } from "src/utils/constants";
 import moment from "moment";
+import {
+  CaretRightOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  SyncOutlined,
+} from "@ant-design/icons";
 
 const initColumns: TableColumnsType<Trip> = [
   {
@@ -47,21 +55,54 @@ const initColumns: TableColumnsType<Trip> = [
     render: (bookTime: string) => moment(bookTime).format("DD/MM/YYYY HH:mm"),
   },
   {
-    title: "Trạng thái",
-    dataIndex: "status",
-    render: (status: Trip["status"]) => (
-      <Tag color="blue" key={status}>
-        {TRIP_STATUS[status] || status}
-      </Tag>
-    ),
-  },
-  {
     title: "Loại",
     dataIndex: "isScheduled",
     render: (isScheduled: Trip["isScheduled"]) => (
-      <Tag color="volcano">
-        {isScheduled ? "Chuyến đặt lịch" : "Chuyến Now"}
-      </Tag>
+      <div className="bike-name text-base">
+        {isScheduled == true && <Tag color="#f50">Đặt lịch</Tag>}
+        {isScheduled == false && <Tag color="#108ee9">Ké now</Tag>}
+      </div>
+    ),
+  },
+  {
+    title: "Trạng thái",
+    dataIndex: "status",
+    render: (status: Trip["status"]) => (
+      // <Tag color="blue" key={status}>
+      //   {TRIP_STATUS[status] || status}
+      // </Tag>
+      <div className="bike-name text-base">
+        {TRIP_STATUS[status] == "FINDING" && (
+          <Tag icon={<SyncOutlined spin />} color="processing">
+            Đang tìm
+          </Tag>
+        )}
+        {TRIP_STATUS[status] == "MATCHED" && (
+          <Tag icon={<ExclamationCircleOutlined />} color="warning">
+            Đã ghép
+          </Tag>
+        )}
+        {TRIP_STATUS[status] == "WAITING" && (
+          <Tag icon={<ClockCircleOutlined />} color="default">
+            Đang chờ
+          </Tag>
+        )}
+        {TRIP_STATUS[status] == "STARTED" && (
+          <Tag icon={<CaretRightOutlined />} color="purple">
+            Đã bắt đầu
+          </Tag>
+        )}
+        {TRIP_STATUS[status] == "FINISHED" && (
+          <Tag icon={<CheckCircleOutlined />} color="success">
+            Hoàn thành
+          </Tag>
+        )}
+        {TRIP_STATUS[status] == "CANCELED" && (
+          <Tag icon={<CloseCircleOutlined />} color="error">
+            Đã hủy
+          </Tag>
+        )}
+      </div>
     ),
   },
 ];

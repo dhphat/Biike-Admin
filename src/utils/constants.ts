@@ -4,13 +4,13 @@ export const GENDER: { [key: number]: string } = {
   3: "Không muốn nói",
 };
 
-export const TRIP_STATUS: { [key: number]: string } = {
-  1: "Đang tìm",
-  2: "Đang chờ",
-  3: "Đang diễn ra",
-  4: "Thành công",
-  5: "Thất bại",
-};
+// export const TRIP_STATUS: { [key: number]: string } = {
+//   1: "Đang tìm",
+//   2: "Đang chờ",
+//   3: "Đang diễn ra",
+//   4: "Thành công",
+//   5: "Thất bại",
+// };
 
 // export const BIKE_STATUS: { [key: number]: string } = {
 //   1: "Chưa xác minh",
@@ -22,4 +22,13 @@ export enum BIKE_STATUS {
   UN_VERIFIED = 1,
   SUCCESS_VERIFIED = 2,
   FAIL_VERIFIED = 3,
+}
+
+export enum TRIP_STATUS {
+  FINDING = 1,
+  MATCHED = 2,
+  WAITING = 3,
+  STARTED = 4,
+  FINISHED = 5,
+  CANCELED = 6,
 }

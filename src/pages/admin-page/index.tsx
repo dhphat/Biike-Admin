@@ -126,8 +126,8 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
       <div className="biike-admin-content mt-4">
         {data?.data.map(
           (admin, index) =>
-            admin.role != 1 &&
-            admin.role != 2 && (
+            admin.roleId != 1 &&
+            admin.roleId != 2 && (
               <div
                 key={index}
                 className="admin-item bg-white px-8 py-4 content-center"

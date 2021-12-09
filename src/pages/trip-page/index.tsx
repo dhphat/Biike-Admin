@@ -68,9 +68,6 @@ const initColumns: TableColumnsType<Trip> = [
     title: "Trạng thái",
     dataIndex: "status",
     render: (status: Trip["status"]) => (
-      // <Tag color="blue" key={status}>
-      //   {TRIP_STATUS[status] || status}
-      // </Tag>
       <div className="bike-name text-base">
         {TRIP_STATUS[status] == "FINDING" && (
           <Tag icon={<SyncOutlined spin />} color="processing">

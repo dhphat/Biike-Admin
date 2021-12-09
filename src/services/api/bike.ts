@@ -22,6 +22,8 @@ export interface Bike {
   bikePicture: string;
   bikeLicensePicture: string;
   plateNumberPicture: string;
+  drivingLicenseBackPicture: string;
+  drivingLicenseFrontPicture: string;
   color: string;
   brand: string;
   createdDate: string;

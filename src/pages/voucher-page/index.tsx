@@ -60,14 +60,25 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
 
   const handleCreateVoucher = (
     values: any,
+    newBanners: RcFile[],
     closeModalCallback?: () => void
   ) => {
-    createVoucherMutation.mutateAsync(values).then((res) => {
-      if (res.data) {
-        closeModalCallback?.();
-        refetch();
-      }
+    const formData = new FormData();
+    formData.append("imageType", "3");
+    newBanners.forEach((banner) => {
+      formData.append("imageList", banner);
     });
+    if (newBanners.length) {
+      uploadImageMutation.mutateAsync(formData).then((uploadRes) => {
+        const voucherImages: string[] = uploadRes.data;
+        createVoucherMutation
+          .mutateAsync({ ...values, voucherImages })
+          .then((createRes) => {
+            closeModalCallback?.();
+            refetch();
+          });
+      });
+    }
   };
 
   // update voucher
@@ -128,6 +139,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
           refetch();
         });
     }
+    // take a look
     updateVoucherMutation
       .mutateAsync([id, { ...values, addressIds: [1] }])
       .then((res) => {
@@ -191,6 +203,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
           toggleCreateVoucherModalVisible,
         ]}
         onOk={handleCreateVoucher}
+        isCreating={createVoucherMutation.isLoading}
       />
 
       <div className="biike-voucher-content mt-4">
@@ -269,7 +282,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
             toggleVoucherCodeModalVisible,
           ]}
           voucher={voucherCodeModal.data}
-          onOk={handleUpdateVoucher}
+          // onOk={handleUpdateVoucherCode}
           isUpdating={updateVoucherMutation.isLoading}
         />
 

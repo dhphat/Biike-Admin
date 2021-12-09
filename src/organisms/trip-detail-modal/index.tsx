@@ -1,7 +1,6 @@
 import { Button, Col, Divider, Form, Modal, Row, Tag, Timeline } from "antd";
 import { useEffect } from "react";
 import { Trip } from "src/services/api/trip";
-import { TRIP_STATUS } from "src/utils/constants";
 import moment from "moment";
 import "./index.scss";
 import {
@@ -62,32 +61,32 @@ export const BiikeTripDetailModal = ({
               {trip?.isScheduled == true && <Tag color="#f50">Đặt lịch</Tag>}
               {trip?.isScheduled == false && <Tag color="#108ee9">Ké now</Tag>}
 
-              {TRIP_STATUS[trip?.status] == "FINDING" && (
+              {trip?.status == 1 && (
                 <Tag icon={<SyncOutlined spin />} color="processing">
                   Đang tìm
                 </Tag>
               )}
-              {TRIP_STATUS[trip?.status] == "MATCHED" && (
+              {trip?.status == 2 && (
                 <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   Đã ghép
                 </Tag>
               )}
-              {TRIP_STATUS[trip?.status] == "WAITING" && (
+              {trip?.status == 3 && (
                 <Tag icon={<ClockCircleOutlined />} color="default">
                   Đang chờ
                 </Tag>
               )}
-              {TRIP_STATUS[trip?.status] == "STARTED" && (
+              {trip?.status == 4 && (
                 <Tag icon={<CaretRightOutlined />} color="purple">
                   Đã bắt đầu
                 </Tag>
               )}
-              {TRIP_STATUS[trip?.status] == "FINISHED" && (
+              {trip?.status == 5 && (
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   Hoàn thành
                 </Tag>
               )}
-              {TRIP_STATUS[trip?.status] == "CANCELED" && (
+              {trip?.status == 6 && (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   Đã hủy
                 </Tag>

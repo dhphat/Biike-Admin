@@ -1,43 +1,14 @@
-import {
-  Menu,
-  Dropdown,
-  Button,
-  message,
-  Row,
-  Col,
-  Card,
-  Statistic,
-  Progress,
-  Divider,
-} from "antd";
-import {
-  ArrowDownOutlined,
-  ArrowUpOutlined,
-  CaretDownOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { Button, message, Row, Col, Card, Statistic, Progress } from "antd";
 import "./index.scss";
+import { useQuery } from "react-query";
+import { dashboardQueryFns } from "src/services/api/dashboard";
+import { useState } from "react";
+import { TRIP_STATUS } from "src/utils/constants";
+import { Pie } from "@ant-design/charts";
 
 interface BiikeHomePageProps {}
 
 export const BiikeHomePage = (props: BiikeHomePageProps) => {
-  // const month = {
-  //   key,
-  // };
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1" icon={<UserOutlined />}>
-        1st menu item
-      </Menu.Item>
-      <Menu.Item key="2" icon={<UserOutlined />}>
-        2nd menu item
-      </Menu.Item>
-      <Menu.Item key="3" icon={<UserOutlined />}>
-        3rd menu item
-      </Menu.Item>
-    </Menu>
-  );
-
   function handleButtonClick(e: any) {
     message.info("Click on left button.");
     console.log("click left button", e);
@@ -48,20 +19,77 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
     console.log("click", e);
   }
 
+  // paging
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+    total: 10,
+  });
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
+
+  const [pieData, setPieData] = useState<
+    Array<{ type: string; value: number }>
+  >([]);
+
+  const { data, isFetching, refetch } = useQuery(
+    ["dashboard"],
+    () => dashboardQueryFns.dashboard(),
+    {
+      onSuccess: (data) => {
+        setPieData(
+          data.data.tripStatusPercentage.map((item) => ({
+            type:
+              item.tripStatus === TRIP_STATUS.FINDING
+                ? "Đang tìm"
+                : item.tripStatus === TRIP_STATUS.MATCHED
+                ? "Đã ghép"
+                : item.tripStatus === TRIP_STATUS.WAITING
+                ? "Đang chờ"
+                : item.tripStatus === TRIP_STATUS.STARTED
+                ? "Đã bắt đầu"
+                : item.tripStatus === TRIP_STATUS.FINISHED
+                ? "Hoàn thành"
+                : "Đã hủy",
+            value: item.percentage,
+          }))
+        );
+      },
+    }
+  );
+
+  const config = {
+    appendPadding: 10,
+    angleField: "value",
+    colorField: "type",
+    radius: 0.9,
+    interactions: [
+      {
+        type: "element-active",
+      },
+    ],
+    label: {
+      type: "inner",
+      offset: "-30%",
+      content: ({ value }: any) => (value > 10 ? `${value.toFixed(2)}%` : " "),
+      style: {
+        fontSize: 14,
+        textAlign: "center",
+      },
+    },
+  };
+
   return (
     <div className="biike-dashboard-page flex flex-col">
       <div>
-        {/* <Dropdown overlay={menu}>
-          <Button>
-            Button <CaretDownOutlined />
-          </Button>
-        </Dropdown> */}
         <div className="biike-dashboard-tools mb-8">
-          <Button
-            type="primary"
-            className="rounded "
-            // onClick={toggleCreateStationModalVisible}
-          >
+          <Button type="primary" className="rounded ">
             Tải báo cáo
           </Button>
         </div>
@@ -74,7 +102,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Tổng người dùng"
-                    value={100}
+                    value={data?.data.totalUser}
                     precision={0}
                     valueStyle={{ color: "#4885ed" }}
                     // prefix={<ArrowUpOutlined />}
@@ -84,7 +112,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Người dùng mới"
-                    value={50}
+                    value={data?.data.totalNewUser}
                     precision={0}
                     valueStyle={{ color: "#4885ed" }}
                     // prefix={<ArrowUpOutlined />}
@@ -93,15 +121,13 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 </Card>
                 <div className="font-bold mb-4 mt-4">Tỉ lệ đặt theo trạm</div>
 
-                <Card>
-                  <span>Đại học FPT TP.HCM</span>
-                  <Progress percent={50} />
-                  <span>Chung cư SKY 9</span>
-                  <Progress percent={25} />
-                  <span>Ngã tư Thủ Đức</span>
-                  <Progress percent={15} />
-                  <span>KTX ĐH QG Khu B</span>
-                  <Progress percent={10} />
+                <Card className="pr-4">
+                  {data?.data.stationPercentage.map((station, index) => (
+                    <div key={index}>
+                      <span>{station.stationName}</span>
+                      <Progress percent={station.percentage} status="active" />
+                    </div>
+                  ))}
                 </Card>
 
                 <div className="font-bold mb-4 mt-4">
@@ -111,7 +137,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Tổng điểm đã được dùng"
-                    value={100}
+                    value={data?.data.totalPointUsedForVoucher}
                     precision={0}
                     valueStyle={{ color: "#f4c20d	" }}
                     // prefix={<ArrowUpOutlined />}
@@ -121,7 +147,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Lượng voucher đã được đổi"
-                    value={50}
+                    value={data?.data.totalRedemption}
                     precision={0}
                     valueStyle={{ color: "#f4c20d	" }}
                     // prefix={<ArrowUpOutlined />}
@@ -131,7 +157,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Tổng lượt click quảng cáo"
-                    value={250}
+                    value={data?.data.totalAdsClickCount}
                     precision={0}
                     valueStyle={{ color: "#f4c20d	" }}
                     // prefix={<ArrowUpOutlined />}
@@ -145,7 +171,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Tổng số chuyến"
-                    value={100}
+                    value={data?.data.totalTrip}
                     precision={0}
                     valueStyle={{ color: "#3cba54" }}
                     // prefix={<ArrowUpOutlined />}
@@ -155,8 +181,8 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 <Card>
                   <Statistic
                     title="Tổng km đã tiết kiệm"
-                    value={500}
-                    precision={0}
+                    value={data?.data.totalKmSaved}
+                    precision={1}
                     valueStyle={{ color: "#3cba54" }}
                     // prefix={<ArrowUpOutlined />}
                     // suffix="%"
@@ -164,88 +190,20 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 </Card>
                 <Card>
                   <Statistic
-                    title="Lượng xăng tiết kiệm (ước tính)"
-                    value={50}
-                    precision={0}
+                    title="Lượng lít xăng tiết kiệm (ước tính)"
+                    value={data?.data.totalFuelSaved}
+                    precision={1}
                     valueStyle={{ color: "#3cba54" }}
                     // prefix={<ArrowUpOutlined />}
                     // suffix="%"
                   />
                 </Card>
-                <div className="font-bold mb-4 mt-4">
+                <div className="font-bold mt-4 mb-4">
                   Tỉ lệ trạng thái chuyến
                 </div>
-                <div className="site-card-wrapper">
-                  <Row gutter={16}>
-                    <Col span={8}>
-                      <Card
-                        title="Đang tìm"
-                        bordered={false}
-                        style={{ textAlign: "center" }}
-                      >
-                        <Progress
-                          type="circle"
-                          percent={15}
-                          strokeColor={{ color: "#f4c20d		" }}
-                        />
-                      </Card>
-                    </Col>
-                    <Col span={8}>
-                      <Card
-                        title="Đang chờ"
-                        bordered={false}
-                        style={{ textAlign: "center" }}
-                      >
-                        <Progress
-                          type="circle"
-                          percent={25}
-                          strokeColor={{ color: "#4885ed	" }}
-                        />
-                      </Card>
-                    </Col>
-                    <Col span={8}>
-                      <Card
-                        title="Đang diễn ra"
-                        bordered={false}
-                        style={{ textAlign: "center" }}
-                      >
-                        <Progress
-                          type="circle"
-                          percent={10}
-                          strokeColor={{ color: "#ec4899" }}
-                        />
-                      </Card>
-                    </Col>
-                    <Divider />
-
-                    <Col span={12}>
-                      <Card
-                        title="Thành công"
-                        bordered={false}
-                        style={{ textAlign: "center" }}
-                      >
-                        <Progress
-                          type="circle"
-                          percent={40}
-                          strokeColor={{ color: "#3cba54" }}
-                        />
-                      </Card>
-                    </Col>
-                    <Col span={12}>
-                      <Card
-                        title="Đã hủy/Thất bại"
-                        bordered={false}
-                        style={{ textAlign: "center" }}
-                      >
-                        <Progress
-                          type="circle"
-                          percent={10}
-                          strokeColor={{ color: "#db3236" }}
-                        />
-                      </Card>
-                    </Col>
-                  </Row>
-                </div>
+                <Card className="pt-7 pb-7">
+                  <Pie {...config} data={pieData} />
+                </Card>
               </Col>
             </Row>
           </div>

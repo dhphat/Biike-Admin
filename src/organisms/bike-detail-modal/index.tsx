@@ -58,7 +58,7 @@ export const BiikeBikeDetailModal = ({
 
   return (
     <Modal
-      width={600}
+      width={1000}
       className="biike-bike-detail-modal rounded"
       visible={visible}
       onCancel={handleCloseModal}
@@ -68,8 +68,8 @@ export const BiikeBikeDetailModal = ({
       <Form>
         <div className="bike-detail-modal-content">
           <div className="site-card-wrapper">
-            <Row gutter={16}>
-              <Col span={10}>
+            <Row gutter={20}>
+              <Col span={6}>
                 <div className="ml-auto flex pa-10 items-center">
                   <div className="flex-col flex font-sans font-bold">
                     <span>Biển số đăng ký</span>
@@ -123,7 +123,7 @@ export const BiikeBikeDetailModal = ({
                   {bike.bikeVolume}
                 </div>
               </Col>
-              <Col span={14}>
+              <Col span={9}>
                 <div className="user-email text-sm font-bold mb-2">
                   <span className="text-gray-1000">Ảnh chụp cà vẹt xe</span>
                   <br />
@@ -144,6 +144,25 @@ export const BiikeBikeDetailModal = ({
                   <br />
                 </div>
                 <Image src={bike.plateNumberPicture} />
+              </Col>
+              <Col span={9}>
+                <div className="user-email text-sm font-bold mb-2">
+                  <span className="text-gray-1000">
+                    Ảnh chụp mặt trước bằng lái xe
+                  </span>
+                  <br />
+                </div>
+                <Image src={bike.drivingLicenseFrontPicture} />
+
+                <br />
+                <div className="user-email text-sm font-bold mb-2">
+                  <span className="text-gray-1000">
+                    Ảnh chụp mặt sau bằng lái xe
+                  </span>
+                  <br />
+                </div>
+
+                <Image src={bike.drivingLicenseBackPicture} />
               </Col>
             </Row>
           </div>

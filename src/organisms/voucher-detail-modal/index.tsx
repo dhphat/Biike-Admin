@@ -10,23 +10,19 @@ import {
   Input,
   Modal,
   Select,
-  List,
-  Avatar,
   Upload,
-  message,
   Row,
   Col,
   DatePicker,
   InputNumber,
-  Image,
   Divider,
   UploadProps,
 } from "antd";
 import { RcFile } from "antd/lib/upload";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import { Voucher, voucherQueryFns } from "src/services/api/voucher";
+import { useQuery } from "react-query";
+import { Voucher } from "src/services/api/voucher";
 import {
   VoucherCategory,
   voucherCategoryQueryFns,
@@ -36,7 +32,6 @@ import "./index.scss";
 interface BiikeVoucherDetailModalProps {
   visibleManage: [boolean, (openID: number) => void];
   voucher?: Voucher;
-  voucherCategory?: VoucherCategory;
   onOk?: (
     id: number,
     data: any,
@@ -50,7 +45,6 @@ interface BiikeVoucherDetailModalProps {
 export const BiikeVoucherDetailModal = ({
   visibleManage,
   voucher,
-  voucherCategory,
   onOk,
   isUpdating,
 }: BiikeVoucherDetailModalProps) => {
@@ -59,7 +53,9 @@ export const BiikeVoucherDetailModal = ({
 
   useEffect(() => {
     if (visible && voucher) {
-      form.setFieldsValue(voucher);
+      const { startDate, endDate } = voucher;
+      const apply_date = [moment(startDate), moment(endDate)];
+      form.setFieldsValue({ ...voucher, apply_date });
       setBannerFileList(
         voucher.voucherImages.map((image) => ({
           uid: `${image.voucherImageId}`,
@@ -71,9 +67,11 @@ export const BiikeVoucherDetailModal = ({
   }, [visible]);
 
   const handleCloseModal = () => {
-    voucher && toggleVisible(voucher.voucherId);
+    form.resetFields();
+    setBannerFileList([]);
     setRemovedBannerIds([]);
     setNewBannerFileList([]);
+    voucher && toggleVisible(voucher.voucherId);
   };
 
   const handleSubmitForm = (values: any) => {
@@ -98,28 +96,6 @@ export const BiikeVoucherDetailModal = ({
 
   const handleChangeUploader: UploadProps<any>["onChange"] = ({ fileList }) => {
     setBannerFileList(fileList);
-
-    // const successFiles = fileList.filter((file) => file.status === "done");
-
-    // const removedBannerFiles = bannerList.filter(
-    //   (banner) => !successFiles.find((file) => banner.uid === file.uid)
-    // );
-
-    // const newBannerFiles = successFiles.filter(
-    //   (file) =>
-    //     !bannerList.find((banner) => file.uid === banner.uid) &&
-    //     !!file.originFileObj
-    // );
-
-    // setBannerList((prev) => [
-    //   ...prev.filter(
-    //     (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
-    //   ),
-    //   ...newBannerFiles.map((nfile) => ({
-    //     uid: nfile.uid,
-    //     file: nfile.originFileObj!,
-    //   })),
-    // ]);
   };
 
   const handleRemoveBanner = (removedBannerId: string) => {
@@ -153,9 +129,17 @@ export const BiikeVoucherDetailModal = ({
 
   //date picker
   const { RangePicker } = DatePicker;
-  const dateFormat = "YYYY/MM/DD";
-
   const { TextArea } = Input;
+
+  const rangeConfig = {
+    rules: [
+      {
+        type: "array" as const,
+        required: true,
+        message: "Vui lòng chọn thời gian áp dụng",
+      },
+    ],
+  };
 
   // load list voucher category
   const { data } = useQuery(["voucherCategories"], () =>
@@ -242,14 +226,10 @@ export const BiikeVoucherDetailModal = ({
 
               <div className=" text-sm font-medium mb-6">
                 <span className="text-gray-500">Thời gian áp dụng</span>
-                <RangePicker
-                  className="mt-2"
-                  defaultValue={[
-                    moment(voucher?.startDate, dateFormat),
-                    moment(voucher?.endDate, dateFormat),
-                  ]}
-                  format={dateFormat}
-                />
+
+                <Form.Item className="mt-2" name="apply_date" {...rangeConfig}>
+                  <RangePicker />
+                </Form.Item>
               </div>
               <div className=" text-sm font-medium ">
                 <span className="text-gray-500">Điểm để đổi</span>
@@ -370,13 +350,11 @@ export const BiikeVoucherDetailModal = ({
                 <UploadOutlined />
                 <div>Tải ảnh lên</div>
               </div>
-              {/* <Button icon={<UploadOutlined />}></Button> */}
             </Upload>
           </div>
 
           <div className="voucher-detail-modal-tools mt-4">
             <Button onClick={handleCloseModal}>Thoát</Button>
-
             <Button
               type="primary"
               className="rounded"

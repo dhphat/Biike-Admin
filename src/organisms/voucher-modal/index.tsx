@@ -1,6 +1,5 @@
 import {
   CaretDownOutlined,
-  EnvironmentOutlined,
   PlusOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
@@ -10,44 +9,69 @@ import {
   Input,
   Modal,
   Select,
-  List,
-  Avatar,
   Upload,
-  message,
   Row,
   Col,
   DatePicker,
   InputNumber,
-  Image,
   Divider,
   UploadProps,
 } from "antd";
 import { RcFile } from "antd/lib/upload";
-import { useEffect, useState } from "react";
-import { useMutation } from "react-query";
+import { useState } from "react";
 import { useToggle } from "src/hooks/useToggle";
-import { voucherQueryFns } from "src/services/api/voucher";
 import "./index.scss";
+import {
+  VoucherCategory,
+  voucherCategoryQueryFns,
+} from "src/services/api/voucher-category";
+import { addressQueryFns } from "src/services/api/address";
+import { useMutation, useQuery } from "react-query";
+import { BiikeAddressModal } from "src/organisms/address-modal";
 
 interface BiikeVoucherModalProps {
-  visibleManage: ReturnType<typeof useToggle>;
-  onOk?: (data: any, closeModalCallback?: () => void) => void;
+  visibleManage: [boolean, (action?: any) => void];
+  onOk?: (
+    data: any,
+    newBanners: RcFile[],
+    // no need to add removed id to list -->
+    // removedBanners: string[],
+    closeModalCallback?: () => void
+  ) => void;
+  isCreating?: boolean;
 }
 
 export const BiikeVoucherModal = ({
   visibleManage,
   onOk,
+  isCreating,
 }: BiikeVoucherModalProps) => {
   const [visible, toggleVisible] = visibleManage;
   const [form] = Form.useForm();
 
   const handleCloseModal = () => {
+    // no need to add removed id to list --> no need to reset this list
+    // setRemovedBannerIds([]);
+    form.resetFields();
+    setBannerFileList([]);
+    setNewBannerFileList([]);
     toggleVisible(false);
   };
 
   const handleSubmitForm = (values: any) => {
+    const applyDate: [moment.Moment, moment.Moment] = values.apply_date;
+    const startDate = applyDate[0].toISOString();
+    const endDate = applyDate[1].toISOString();
+    const formatedValues = values;
+    delete formatedValues.apply_date;
+
     onOk?.(
-      { ...values, bannerImages: bannerUrlList.map(({ url }) => url) },
+      {
+        ...formatedValues,
+        startDate,
+        endDate,
+      },
+      newBannerFileList /* removedBannerIds, */,
       handleCloseModal
     );
   };
@@ -57,31 +81,25 @@ export const BiikeVoucherModal = ({
     UploadProps<any>["fileList"]
   >([]);
 
-  const [bannerUrlList, setBannerUrlList] = useState<
-    { uid: string; url: string }[]
-  >([]);
+  const [newBannerFileList, setNewBannerFileList] = useState<RcFile[]>([]);
 
-  const uploadImageMutation = useMutation(voucherQueryFns.uploadVoucherBanner);
+  // const [removedBannerIds, setRemovedBannerIds] = useState<string[]>([]);
 
   const handleChangeUploader: UploadProps<any>["onChange"] = ({ fileList }) => {
     setBannerFileList(fileList);
+  };
 
-    const successFiles = fileList.filter((file) => file.status === "done");
-
-    const removedBannerFiles = bannerUrlList.filter(
-      (banner) => !successFiles.find((file) => banner.uid === file.uid)
+  const handleRemoveBanner = (removedBannerId: string) => {
+    // no need to add removed id to list
+    // if (!newBannerFileList.find((banner) => banner.uid === removedBannerId)) {
+    //   setRemovedBannerIds((prev) => [
+    //     ...prev.filter((id) => id !== removedBannerId),
+    //     removedBannerId,
+    //   ]);
+    // }
+    setNewBannerFileList((prev) =>
+      prev.filter((banner) => banner.uid !== removedBannerId)
     );
-
-    const newBannerFiles = successFiles.filter(
-      (file) => !bannerUrlList.find((banner) => file.uid === banner.uid)
-    );
-
-    setBannerUrlList((prev) => [
-      ...prev.filter(
-        (pfile) => !removedBannerFiles.find((rfile) => pfile.uid === rfile.uid)
-      ),
-      ...newBannerFiles.map((nfile) => ({ uid: nfile.uid, url: "" })),
-    ]);
   };
 
   const handleUploadBanner: UploadProps<any>["customRequest"] = ({
@@ -89,28 +107,74 @@ export const BiikeVoucherModal = ({
     onSuccess,
     onError,
   }) => {
-    const formData = new FormData();
-    formData.append("imageType", "3");
-    formData.append("imageList", file);
-    uploadImageMutation
-      .mutateAsync(formData)
-      .then((res) => {
-        const bannerUrl = { uid: (file as RcFile).uid, url: res.data[0] };
-        setBannerUrlList([
-          ...bannerUrlList.filter((banner) => banner.uid != bannerUrl.uid),
-          bannerUrl,
-        ]);
-        onSuccess?.(undefined, new XMLHttpRequest());
-      })
-      .catch((err) => {
-        onError?.(err);
-      });
+    try {
+      const newBannerFile = file as RcFile;
+      setNewBannerFileList((prev) => [
+        ...prev.filter((banner) => banner.uid != newBannerFile.uid),
+        newBannerFile,
+      ]);
+      onSuccess?.(undefined, new XMLHttpRequest());
+    } catch (error: any) {
+      onError?.(error);
+    }
   };
 
   //date picker
   const { RangePicker } = DatePicker;
-
   const { TextArea } = Input;
+
+  const rangeConfig = {
+    rules: [
+      {
+        type: "array" as const,
+        required: true,
+        message: "Vui lòng chọn thời gian áp dụng",
+      },
+    ],
+  };
+
+  const TimeRelatedForm = () => {
+    const onFinish = (fieldsValue: any) => {
+      // Should format date value before submit.
+      const rangeValue = fieldsValue["range-picker"];
+      const values = {
+        ...fieldsValue,
+        "range-picker": [
+          rangeValue[0].format("YYYY-MM-DD"),
+          rangeValue[1].format("YYYY-MM-DD"),
+        ],
+      };
+      console.log("Received values of form: ", values);
+    };
+  };
+
+  // load list voucher category
+  const { data } = useQuery(["voucherCategories"], () =>
+    voucherCategoryQueryFns.voucherCategories({ limit: 100, page: 1 })
+  );
+
+  // load list address
+  const { data: addressData, refetch } = useQuery(["addresses"], () =>
+    addressQueryFns.addresses({ limit: 100, page: 1 })
+  );
+
+  // add address
+  const [isCreateAddressModalVisible, toggleCreateAddressModalVisible] =
+    useToggle(false);
+
+  const createAddressMutation = useMutation(addressQueryFns.createAddress);
+
+  const handleCreateAddress = (
+    values: any,
+    closeModalCallback?: () => void
+  ) => {
+    createAddressMutation.mutateAsync(values).then((res) => {
+      if (res.data) {
+        closeModalCallback?.();
+        refetch();
+      }
+    });
+  };
 
   return (
     <Modal
@@ -120,60 +184,13 @@ export const BiikeVoucherModal = ({
       closable={false}
       footer={null}
     >
-      {/* <Form form={form} onFinish={handleSubmitForm}>
-        <div className="voucher-modal-content">
-          <Form.Item name="name">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tên trạm</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-          <Form.Item name="coordinate">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tọa độ</span>
-              <div className="flex flex-column mt-2">
-                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1" />
-                <Button
-                  type="primary"
-                  className="rounded ml-1"
-                  href="https://www.google.com/maps/"
-                  target="_blank"
-                >
-                  Bản đồ
-                </Button>
-              </div>
-            </div>
-          </Form.Item>
-          <Form.Item name="address">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Địa chỉ</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-4 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Khu vực</span>
-            <Form.Item name="areaId">
-              <Select
-                placeholder="Chọn khu vực"
-                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                options={[{ label: "Trường Đại học FPT", value: "1" }]}
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-              />
-            </Form.Item>
-          </div>
-          <div className="voucher-modal-tools">
-            <Button onClick={handleCloseModal}>Hủy</Button>
-            <Button type="primary" className="rounded" htmlType="submit">
-              Thêm trạm
-            </Button>
-          </div>
-        </div>
-      </Form> */}
-
       <Form form={form} onFinish={handleSubmitForm}>
         <div className="voucher-modal-content">
           <Row gutter={16}>
             <Col span={12}>
+              <div className=" text-sm font-medium ">
+                <span className="text-gray-500">Tên ưu đãi</span>
+              </div>
               <Form.Item
                 name="voucherName"
                 rules={[
@@ -183,12 +200,11 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <div className=" text-sm font-medium ">
-                  <span className="text-gray-500">Tên ưu đãi</span>
-
-                  <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-                </div>
+                <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
               </Form.Item>
+              <div className=" text-sm font-medium ">
+                <span className="text-gray-500">Thương hiệu</span>
+              </div>
               <Form.Item
                 name="brand"
                 rules={[
@@ -198,41 +214,53 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <div className=" text-sm font-medium ">
-                  <span className="text-gray-500">Thương hiệu</span>
-
-                  <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-                </div>
+                <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                name="VoucherCategoryId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn danh mục",
-                  },
-                ]}
-              >
-                <div className=" text-sm font-medium ">
-                  <span className="text-gray-500">Danh mục ưu đãi</span>
-
+              <div className=" text-sm font-medium">
+                <span className="text-gray-500">Danh mục ưu đãi</span>
+                <Form.Item
+                  name="VoucherCategoryId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn danh mục",
+                    },
+                  ]}
+                >
                   <Select
                     suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                    // defaultValue="1"
-
-                    options={[{ label: "Danh mục ưu đãi", value: "1" }]}
+                    options={data?.data
+                      .filter(
+                        (voucherCategory: { voucherCategoryId: any }) =>
+                          voucherCategory.voucherCategoryId
+                      )
+                      .map(
+                        (voucherCategory: {
+                          voucherCategoryId: any;
+                          categoryName: any;
+                        }) => ({
+                          value: voucherCategory.voucherCategoryId,
+                          label: voucherCategory.categoryName,
+                        })
+                      )}
                     className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
                   />
-                </div>
-              </Form.Item>
-
-              <div className=" text-sm font-medium mb-6">
-                <span className="text-gray-500">Thời gian áp dụng</span>
-                <RangePicker className="mt-2" />
+                </Form.Item>
               </div>
 
+              <div className=" text-sm font-medium mb-6">
+                <span className="text-gray-500 mb-2">Thời gian áp dụng</span>
+
+                <Form.Item className="mt-2" name="apply_date" {...rangeConfig}>
+                  <RangePicker />
+                </Form.Item>
+              </div>
+              <div className=" text-sm font-medium">
+                <span className="text-gray-500">Điểm để đổi</span>
+                <br />
+              </div>
               <Form.Item
                 name="amountOfPoint"
                 rules={[
@@ -242,15 +270,14 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <div className=" text-sm font-medium">
-                  <span className="text-gray-500">Điểm để đổi</span>
-                  <br />
-                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
-                </div>
+                <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
               </Form.Item>
             </Col>
           </Row>
           <Divider />
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Mô tả</span>
+          </div>
           <Form.Item
             name="description"
             rules={[
@@ -260,16 +287,15 @@ export const BiikeVoucherModal = ({
               },
             ]}
           >
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Mô tả</span>
-
-              <TextArea
-                className="mt-2"
-                autoSize={{ minRows: 7, maxRows: 7 }}
-                placeholder="Nhập mô tả"
-              />
-            </div>
+            <TextArea
+              className="mt-2"
+              autoSize={{ minRows: 7, maxRows: 7 }}
+              placeholder="Nhập mô tả"
+            />
           </Form.Item>
+          <div className=" text-sm font-medium ">
+            <span className="text-gray-500">Điều kiện sử dụng</span>
+          </div>
           <Form.Item
             name="termsAndConditions"
             rules={[
@@ -279,22 +305,46 @@ export const BiikeVoucherModal = ({
               },
             ]}
           >
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Điều kiện sử dụng</span>
-
-              <TextArea
-                className="mt-2"
-                autoSize={{ minRows: 7, maxRows: 7 }}
-                placeholder="Nhập điều kiện sử dụng"
-              />
-            </div>
+            <TextArea
+              className="mt-2"
+              autoSize={{ minRows: 7, maxRows: 7 }}
+              placeholder="Nhập điều kiện sử dụng"
+            />
           </Form.Item>
 
           <div className=" text-sm font-medium ">
             <span className="text-gray-500 mr-4">Địa điểm áp dụng</span>
-            <Button type="dashed" icon={<PlusOutlined />}>
+            <Button
+              className="mb-5"
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={toggleCreateAddressModalVisible}
+            >
               Thêm địa điểm
             </Button>
+
+            <Form.Item
+              name="addressIds"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn địa điểm",
+                  type: "array",
+                },
+              ]}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Chọn địa điểm áp dụng"
+                options={addressData?.data
+                  .filter((address: { addressId: any }) => address.addressId)
+                  .map((address: { addressId: any; addressDetail: any }) => ({
+                    value: address.addressId,
+                    label: address.addressDetail,
+                  }))}
+                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+              />
+            </Form.Item>
 
             {/* {voucher?.voucherAddresses.length ? (
               voucher.voucherAddresses.map((address, index) => (
@@ -315,6 +365,14 @@ export const BiikeVoucherModal = ({
             )} */}
           </div>
 
+          <BiikeAddressModal
+            visibleManage={[
+              isCreateAddressModalVisible,
+              toggleCreateAddressModalVisible,
+            ]}
+            onOk={handleCreateAddress}
+          />
+
           <Divider />
           <div className=" text-sm font-medium ">
             <span className="text-gray-500">Banner</span>
@@ -332,18 +390,27 @@ export const BiikeVoucherModal = ({
 
             <br />
             <Upload
-              listType="picture"
+              listType="picture-card"
               customRequest={handleUploadBanner}
               fileList={bannerFileList}
               onChange={handleChangeUploader}
+              onRemove={({ uid }) => handleRemoveBanner(uid)}
             >
-              <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
+              <div>
+                <UploadOutlined />
+                <div>Tải ảnh lên</div>
+              </div>
             </Upload>
           </div>
 
           <div className="voucher-modal-tools mt-4">
             <Button onClick={handleCloseModal}>Hủy</Button>
-            <Button type="primary" className="rounded" htmlType="submit">
+            <Button
+              type="primary"
+              className="rounded"
+              htmlType="submit"
+              loading={isCreating}
+            >
               Thêm ưu đãi
             </Button>
           </div>

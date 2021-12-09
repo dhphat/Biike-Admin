@@ -29,7 +29,7 @@ export interface User {
   userId: number;
   userPhoneNumber: string;
   email: string;
-  role: number;
+  roleId: number;
   userFullname: string;
   avatar: string;
   gender: number;

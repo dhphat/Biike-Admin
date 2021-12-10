@@ -208,7 +208,11 @@ export const BiikeBikeDetailModal = ({
                 className="rounded"
                 htmlType="submit"
                 onClick={() =>
-                  handleVerifyBikeIsValid({ verificationResult: false })
+                  handleVerifyBikeIsValid({
+                    verificationResult: false,
+                    failedVerificationReason:
+                      "Thông tin xe bạn gửi chưa chính xác, vui lòng thêm lại xe.",
+                  })
                 }
               >
                 Xác minh không hợp lệ

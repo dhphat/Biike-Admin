@@ -21,12 +21,12 @@ import {
 import { RcFile } from "antd/lib/upload";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
+import { useToggle } from "src/hooks/useToggle";
+import { addressQueryFns } from "src/services/api/address";
 import { Voucher } from "src/services/api/voucher";
-import {
-  VoucherCategory,
-  voucherCategoryQueryFns,
-} from "src/services/api/voucher-category";
+import { voucherCategoryQueryFns } from "src/services/api/voucher-category";
+import { BiikeAddressModal } from "../address-modal";
 import "./index.scss";
 
 interface BiikeVoucherDetailModalProps {
@@ -146,6 +146,29 @@ export const BiikeVoucherDetailModal = ({
     voucherCategoryQueryFns.voucherCategories({ limit: 10, page: 1 })
   );
 
+  // load list address
+  const { data: addressData, refetch } = useQuery(["addresses"], () =>
+    addressQueryFns.addresses({ limit: 100, page: 1 })
+  );
+
+  // add address
+  const [isCreateAddressModalVisible, toggleCreateAddressModalVisible] =
+    useToggle(false);
+
+  const createAddressMutation = useMutation(addressQueryFns.createAddress);
+
+  const handleCreateAddress = (
+    values: any,
+    closeModalCallback?: () => void
+  ) => {
+    createAddressMutation.mutateAsync(values).then((res) => {
+      if (res.data) {
+        closeModalCallback?.();
+        refetch();
+      }
+    });
+  };
+
   return (
     <Modal
       className="biike-voucher-detail-modal rounded"
@@ -154,163 +177,172 @@ export const BiikeVoucherDetailModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="voucher-detail-modal-content">
           <br />
 
           <Row gutter={16}>
             <Col span={12}>
-              <div className=" text-sm font-medium mb-11">
+              <div className=" text-sm mb-12">
                 <span className="text-gray-500">ID</span>
                 <div className="voucher-email text-sm mb-2">
                   {voucher?.voucherId}
                 </div>
               </div>
 
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Tên ưu đãi</span>
-                <Form.Item
-                  name="voucherName"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập tên ưu đãi",
-                    },
-                  ]}
-                >
-                  <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="voucherName"
+                label="Tên ưu đãi"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên ưu đãi",
+                  },
+                ]}
+              >
+                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+              </Form.Item>
 
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Thương hiệu</span>
-                <Form.Item
-                  name="brand"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập thương hiệu",
-                    },
-                  ]}
-                >
-                  <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="brand"
+                label="Thương hiệu"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập thương hiệu",
+                  },
+                ]}
+              >
+                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+              </Form.Item>
             </Col>
             <Col span={12}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Danh mục ưu đãi</span>
-                <Form.Item
-                  name="voucherCategoryId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn danh mục",
-                    },
-                  ]}
-                >
-                  <Select
-                    suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                    options={data?.data
-                      .filter(
-                        (voucherCategory) => voucherCategory.voucherCategoryId
-                      )
-                      .map((voucherCategory) => ({
-                        value: voucherCategory.voucherCategoryId,
-                        label: voucherCategory.categoryName,
-                      }))}
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-                  />
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="voucherCategoryId"
+                label="Danh mục ưu đãi"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn danh mục",
+                  },
+                ]}
+              >
+                <Select
+                  suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+                  options={data?.data
+                    .filter(
+                      (voucherCategory) => voucherCategory.voucherCategoryId
+                    )
+                    .map((voucherCategory) => ({
+                      value: voucherCategory.voucherCategoryId,
+                      label: voucherCategory.categoryName,
+                    }))}
+                  className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+                />
+              </Form.Item>
 
-              <div className=" text-sm font-medium mb-6">
-                <span className="text-gray-500">Thời gian áp dụng</span>
+              <Form.Item
+                label="Thời gian áp dụng"
+                className=""
+                name="apply_date"
+                {...rangeConfig}
+              >
+                <RangePicker />
+              </Form.Item>
 
-                <Form.Item className="mt-2" name="apply_date" {...rangeConfig}>
-                  <RangePicker />
-                </Form.Item>
-              </div>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Điểm để đổi</span>
-                <Form.Item
-                  name="amountOfPoint"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập điểm",
-                    },
-                  ]}
-                >
-                  <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="amountOfPoint"
+                label="Điểm để đổi"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập điểm",
+                  },
+                ]}
+              >
+                <InputNumber className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
+              </Form.Item>
             </Col>
           </Row>
 
           <Divider />
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Mô tả</span>
-            <Form.Item
-              name="description"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mô tả",
-                },
-              ]}
-            >
-              <TextArea
-                className="mt-2"
-                autoSize={{ minRows: 7, maxRows: 7 }}
-                placeholder="Nhập mô tả"
-              />
-            </Form.Item>
-          </div>
 
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Điều kiện sử dụng</span>
-            <Form.Item
-              name="termsAndConditions"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập điều kiện",
-                },
-              ]}
-            >
-              <TextArea
-                className="mt-2"
-                autoSize={{ minRows: 7, maxRows: 7 }}
-                placeholder="Nhập điều kiện sử dụng"
-              />
-            </Form.Item>
-          </div>
+          <Form.Item
+            name="description"
+            label="Mô tả"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mô tả",
+              },
+            ]}
+          >
+            <TextArea
+              className="mt-2"
+              autoSize={{ minRows: 7, maxRows: 7 }}
+              placeholder="Nhập mô tả"
+            />
+          </Form.Item>
 
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500 mr-4">Địa điểm áp dụng</span>
-            <Button type="dashed" icon={<PlusOutlined />}>
-              Thêm địa điểm
-            </Button>
+          <Form.Item
+            name="termsAndConditions"
+            label="Điều kiện sử dụng"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập điều kiện",
+              },
+            ]}
+          >
+            <TextArea
+              className="mt-2"
+              autoSize={{ minRows: 7, maxRows: 7 }}
+              placeholder="Nhập điều kiện sử dụng"
+            />
+          </Form.Item>
 
-            {voucher?.voucherAddresses.length ? (
-              voucher.voucherAddresses.map((address, index) => (
-                <div key={index} className="user-email text-sm">
-                  <p className="text-gray-600 font-medium">
-                    <EnvironmentOutlined /> {address.addressName}{" "}
-                    <Button type="text" danger>
-                      Xóa
-                    </Button>
-                  </p>
-                  <p className="text-gray-400 font-light">
-                    {address.addressDetail}{" "}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="text-gray-400">Chưa cung cấp</div>
-            )}
-          </div>
+          <Form.Item
+            name="addressIds"
+            label="Địa điểm áp dụng"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn địa điểm",
+                type: "array",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Chọn địa điểm áp dụng"
+              defaultValue={voucher?.voucherAddresses.map(
+                (voucherAddress) => voucherAddress.addressId
+              )}
+              options={addressData?.data
+                .filter((address: { addressId: any }) => address.addressId)
+                .map((address: { addressId: any; addressDetail: any }) => ({
+                  value: address.addressId,
+                  label: address.addressDetail,
+                }))}
+              className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
+          </Form.Item>
+          <span className="font-normal">Không tìm thấy địa điểm?</span>
+          <Button
+            type="link"
+            size={"small"}
+            onClick={toggleCreateAddressModalVisible}
+          >
+            Thêm địa điểm
+          </Button>
+
+          <BiikeAddressModal
+            visibleManage={[
+              isCreateAddressModalVisible,
+              toggleCreateAddressModalVisible,
+            ]}
+            onOk={handleCreateAddress}
+          />
 
           <Divider />
           <div className=" text-sm font-medium ">

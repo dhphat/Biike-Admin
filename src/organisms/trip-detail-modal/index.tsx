@@ -172,10 +172,10 @@ export const BiikeTripDetailModal = ({
               Thời gian đặt: {moment(trip?.bookTime).format("DD/MM/YYYY HH:mm")}
             </Timeline.Item>
             {trip?.pickupTime == null ? (
-              <Timeline.Item color="gray">Chưa đón</Timeline.Item>
+              <Timeline.Item color="gray">Chưa bắt đầu</Timeline.Item>
             ) : (
               <Timeline.Item color="green">
-                Thời gian đón:{" "}
+                Thời gian bắt đầu:{" "}
                 {moment(trip?.pickupTime).format("DD/MM/YYYY HH:mm")}
               </Timeline.Item>
             )}

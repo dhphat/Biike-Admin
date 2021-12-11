@@ -1,4 +1,4 @@
-import { CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Select } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import "./index.scss";
@@ -31,26 +31,70 @@ export const BiikeAddressModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="address-modal-content">
-          <Form.Item name="addressName">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tên địa chỉ</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+          <Form.Item
+            name="addressName"
+            label="Tên địa chỉ"
+            tooltip={{
+              title:
+                "Tên địa chỉ là tên cửa hàng hoặc nơi triển khai khuyến mãi/quảng cáo.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập tên địa chỉ",
+              },
+            ]}
+          >
+            <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+          </Form.Item>
+          <Form.Item
+            name="addressDetail"
+            label="Địa chỉ"
+            tooltip={{
+              title:
+                "Từ trang bản đồ, hãy bấm vào dòng địa chỉ ở thanh trái để copy địa chỉ.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập địa chỉ",
+              },
+            ]}
+          >
+            <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-4 text-blue-gray-500" />
+          </Form.Item>
+          <Form.Item
+            name="addressCoordinate"
+            label="Tọa độ"
+            tooltip={{
+              title:
+                "Lấy tọa độ chính xác bằng cách mở bản đồ, nhấp chuột phải vào điểm và bấm vào tọa độ để copy.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập tọa độ",
+              },
+            ]}
+          >
+            <div className="flex flex-column">
+              <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500 mr-1" />
+              <Button
+                type="primary"
+                className="rounded ml-1"
+                href="https://www.google.com/maps/"
+                target="_blank"
+              >
+                Bản đồ
+              </Button>
             </div>
           </Form.Item>
-          <Form.Item name="addressDetail">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Địa chỉ</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-          <Form.Item name="addressCoordinate">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Tọa độ</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
+
           <div className="address-modal-tools">
             <Button onClick={handleCloseModal}>Hủy</Button>
             <Button type="primary" className="rounded" htmlType="submit">

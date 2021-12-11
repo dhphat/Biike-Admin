@@ -1,8 +1,4 @@
-import {
-  CaretDownOutlined,
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { CaretDownOutlined, UploadOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -21,10 +17,7 @@ import { RcFile } from "antd/lib/upload";
 import { useState } from "react";
 import { useToggle } from "src/hooks/useToggle";
 import "./index.scss";
-import {
-  VoucherCategory,
-  voucherCategoryQueryFns,
-} from "src/services/api/voucher-category";
+import { voucherCategoryQueryFns } from "src/services/api/voucher-category";
 import { addressQueryFns } from "src/services/api/address";
 import { useMutation, useQuery } from "react-query";
 import { BiikeAddressModal } from "src/organisms/address-modal";
@@ -133,21 +126,6 @@ export const BiikeVoucherModal = ({
     ],
   };
 
-  const TimeRelatedForm = () => {
-    const onFinish = (fieldsValue: any) => {
-      // Should format date value before submit.
-      const rangeValue = fieldsValue["range-picker"];
-      const values = {
-        ...fieldsValue,
-        "range-picker": [
-          rangeValue[0].format("YYYY-MM-DD"),
-          rangeValue[1].format("YYYY-MM-DD"),
-        ],
-      };
-      console.log("Received values of form: ", values);
-    };
-  };
-
   // load list voucher category
   const { data } = useQuery(["voucherCategories"], () =>
     voucherCategoryQueryFns.voucherCategories({ limit: 100, page: 1 })
@@ -184,15 +162,13 @@ export const BiikeVoucherModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="voucher-modal-content">
           <Row gutter={16}>
             <Col span={12}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Tên ưu đãi</span>
-              </div>
               <Form.Item
                 name="voucherName"
+                label="Tên ưu đãi"
                 rules={[
                   {
                     required: true,
@@ -200,13 +176,12 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
               </Form.Item>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Thương hiệu</span>
-              </div>
+
               <Form.Item
                 name="brand"
+                label="Thương hiệu"
                 rules={[
                   {
                     required: true,
@@ -214,55 +189,52 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
+                <Input className="bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <div className=" text-sm font-medium">
-                <span className="text-gray-500">Danh mục ưu đãi</span>
-                <Form.Item
-                  name="VoucherCategoryId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn danh mục",
-                    },
-                  ]}
-                >
-                  <Select
-                    suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                    options={data?.data
-                      .filter(
-                        (voucherCategory: { voucherCategoryId: any }) =>
-                          voucherCategory.voucherCategoryId
-                      )
-                      .map(
-                        (voucherCategory: {
-                          voucherCategoryId: any;
-                          categoryName: any;
-                        }) => ({
-                          value: voucherCategory.voucherCategoryId,
-                          label: voucherCategory.categoryName,
-                        })
-                      )}
-                    className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-                  />
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="VoucherCategoryId"
+                label="Danh mục ưu đãi"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn danh mục",
+                  },
+                ]}
+              >
+                <Select
+                  suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+                  options={data?.data
+                    .filter(
+                      (voucherCategory: { voucherCategoryId: any }) =>
+                        voucherCategory.voucherCategoryId
+                    )
+                    .map(
+                      (voucherCategory: {
+                        voucherCategoryId: any;
+                        categoryName: any;
+                      }) => ({
+                        value: voucherCategory.voucherCategoryId,
+                        label: voucherCategory.categoryName,
+                      })
+                    )}
+                  className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+                />
+              </Form.Item>
 
-              <div className=" text-sm font-medium mb-6">
-                <span className="text-gray-500 mb-2">Thời gian áp dụng</span>
+              <Form.Item
+                label="Thời gian áp dụng"
+                className=""
+                name="apply_date"
+                {...rangeConfig}
+              >
+                <RangePicker />
+              </Form.Item>
 
-                <Form.Item className="mt-2" name="apply_date" {...rangeConfig}>
-                  <RangePicker />
-                </Form.Item>
-              </div>
-              <div className=" text-sm font-medium">
-                <span className="text-gray-500">Điểm để đổi</span>
-                <br />
-              </div>
               <Form.Item
                 name="amountOfPoint"
+                label="Điểm để đổi"
                 rules={[
                   {
                     required: true,
@@ -270,16 +242,14 @@ export const BiikeVoucherModal = ({
                   },
                 ]}
               >
-                <InputNumber className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
+                <InputNumber className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500" />
               </Form.Item>
             </Col>
           </Row>
-          <Divider />
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Mô tả</span>
-          </div>
+
           <Form.Item
             name="description"
+            label="Mô tả"
             rules={[
               {
                 required: true,
@@ -293,11 +263,10 @@ export const BiikeVoucherModal = ({
               placeholder="Nhập mô tả"
             />
           </Form.Item>
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Điều kiện sử dụng</span>
-          </div>
+
           <Form.Item
             name="termsAndConditions"
+            label="Điều kiện sử dụng"
             rules={[
               {
                 required: true,
@@ -312,58 +281,37 @@ export const BiikeVoucherModal = ({
             />
           </Form.Item>
 
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500 mr-4">Địa điểm áp dụng</span>
-            <Button
-              className="mb-5"
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={toggleCreateAddressModalVisible}
-            >
-              Thêm địa điểm
-            </Button>
-
-            <Form.Item
-              name="addressIds"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn địa điểm",
-                  type: "array",
-                },
-              ]}
-            >
-              <Select
-                mode="multiple"
-                placeholder="Chọn địa điểm áp dụng"
-                options={addressData?.data
-                  .filter((address: { addressId: any }) => address.addressId)
-                  .map((address: { addressId: any; addressDetail: any }) => ({
-                    value: address.addressId,
-                    label: address.addressDetail,
-                  }))}
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-              />
-            </Form.Item>
-
-            {/* {voucher?.voucherAddresses.length ? (
-              voucher.voucherAddresses.map((address, index) => (
-                <div key={index} className="user-email text-sm">
-                  <p className="text-gray-600 font-medium">
-                    <EnvironmentOutlined /> {address.addressName}{" "}
-                    <Button type="text" danger>
-                      Xóa
-                    </Button>
-                  </p>
-                  <p className="text-gray-400 font-light">
-                    {address.addressDetail}{" "}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="text-gray-400">Chưa cung cấp</div>
-            )} */}
-          </div>
+          <Form.Item
+            name="addressIds"
+            label="Địa điểm áp dụng"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn địa điểm",
+                type: "array",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Chọn địa điểm áp dụng"
+              options={addressData?.data
+                .filter((address: { addressId: any }) => address.addressId)
+                .map((address: { addressId: any; addressDetail: any }) => ({
+                  value: address.addressId,
+                  label: address.addressDetail,
+                }))}
+              className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
+          </Form.Item>
+          <span className="font-normal">Không tìm thấy địa điểm?</span>
+          <Button
+            type="link"
+            size={"small"}
+            onClick={toggleCreateAddressModalVisible}
+          >
+            Thêm địa điểm
+          </Button>
 
           <BiikeAddressModal
             visibleManage={[
@@ -374,34 +322,23 @@ export const BiikeVoucherModal = ({
           />
 
           <Divider />
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Banner</span>
-            <br />
-
-            {/* {voucher?.voucherImages.map((image, index) => (
-              <div key={index}>
-                <Image
-                  className="mt-2 mb-2"
-                  width={200}
-                  src={image.voucherImageUrl}
-                />
-              </div>
-            ))} */}
-
-            <br />
-            <Upload
-              listType="picture-card"
-              customRequest={handleUploadBanner}
-              fileList={bannerFileList}
-              onChange={handleChangeUploader}
-              onRemove={({ uid }) => handleRemoveBanner(uid)}
-            >
-              <div>
-                <UploadOutlined />
-                <div>Tải ảnh lên</div>
-              </div>
-            </Upload>
+          <div className="mb-3">
+            <span className="text-red-500">* </span>
+            <span>Banner</span>
           </div>
+
+          <Upload
+            listType="picture-card"
+            customRequest={handleUploadBanner}
+            fileList={bannerFileList}
+            onChange={handleChangeUploader}
+            onRemove={({ uid }) => handleRemoveBanner(uid)}
+          >
+            <div>
+              <UploadOutlined />
+              <div>Tải ảnh lên</div>
+            </div>
+          </Upload>
 
           <div className="voucher-modal-tools mt-4">
             <Button onClick={handleCloseModal}>Hủy</Button>

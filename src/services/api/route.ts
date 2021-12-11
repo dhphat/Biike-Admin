@@ -26,6 +26,7 @@ export interface Route {
   destinationName: string;
   createdDate: string;
   isDeleted: boolean;
+  distance: number;
 }
 
 export interface RoutesResponse extends PaginationQueryResponse<Array<Route>> {}

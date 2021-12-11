@@ -17,6 +17,7 @@ import {
   Switch,
 } from "antd";
 import { RcFile } from "antd/lib/upload";
+import { url } from "inspector";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Advertisement } from "src/services/api/advertisement";
@@ -208,6 +209,7 @@ export const BiikeAdvertisementDetailModal = ({
                       required: true,
                       message: "Vui lòng nhập liên kết",
                     },
+                    { type: "url", message: "Liên kết không hợp lệ" },
                   ]}
                 >
                   <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />

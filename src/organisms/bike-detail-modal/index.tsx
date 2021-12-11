@@ -199,36 +199,43 @@ export const BiikeBikeDetailModal = ({
           {/* createdDate
           
           gender */}
+          {bike.bikeStatus === BIKE_STATUS.UN_VERIFIED && (
+            <div className="bike-detail-modal-tools mb-5 text-red-500">
+              Khi đã xác minh, bạn sẽ không thể hoàn tác. Hãy kiểm tra thật kỹ
+              trước khi xác minh.
+            </div>
+          )}
 
           <div className="bike-detail-modal-tools">
             <Button onClick={handleCloseModal}>Thoát</Button>
-            {bike.bikeStatus !== BIKE_STATUS.FAIL_VERIFIED && (
-              <Button
-                type="text"
-                className="rounded"
-                htmlType="submit"
-                onClick={() =>
-                  handleVerifyBikeIsValid({
-                    verificationResult: false,
-                    failedVerificationReason:
-                      "Thông tin xe bạn gửi chưa chính xác, vui lòng thêm lại xe.",
-                  })
-                }
-              >
-                Xác minh không hợp lệ
-              </Button>
-            )}
-            {bike.bikeStatus !== BIKE_STATUS.SUCCESS_VERIFIED && (
-              <Button
-                type="primary"
-                className="rounded"
-                htmlType="submit"
-                onClick={() =>
-                  handleVerifyBikeIsInvalid({ verificationResult: true })
-                }
-              >
-                Xác minh hợp lệ
-              </Button>
+
+            {bike.bikeStatus === BIKE_STATUS.UN_VERIFIED && (
+              <div>
+                <Button
+                  danger
+                  className="rounded mr-5"
+                  htmlType="submit"
+                  onClick={() =>
+                    handleVerifyBikeIsValid({
+                      verificationResult: false,
+                      failedVerificationReason:
+                        "Thông tin xe bạn gửi chưa chính xác, vui lòng thêm lại xe.",
+                    })
+                  }
+                >
+                  Xác minh không hợp lệ
+                </Button>
+                <Button
+                  type="primary"
+                  className="rounded"
+                  htmlType="submit"
+                  onClick={() =>
+                    handleVerifyBikeIsInvalid({ verificationResult: true })
+                  }
+                >
+                  Xác minh hợp lệ
+                </Button>
+              </div>
             )}
           </div>
         </div>

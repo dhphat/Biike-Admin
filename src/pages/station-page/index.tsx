@@ -98,11 +98,27 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
 
   const handleDeleteStation = (station: Station) => {
     Modal.confirm({
+      okText: "Tạm dừng trạm",
+      cancelText: "Thoát",
       type: "confirm",
-      title: `Are you sure to change ${station.name}?`,
+      title: `Bạn có chắc chắn muốn tạm dừng trạm ${station.name}?`,
       onOk: () => {
         deleteStationMutation.mutateAsync(station.stationId).then((res) => {
           console.log("delete ok!");
+          refetch();
+        });
+      },
+    });
+  };
+
+  const handleUnlockStation = (station: Station) => {
+    Modal.confirm({
+      okText: "Kích hoạt trạm",
+      cancelText: "Thoát",
+      type: "confirm",
+      title: `Bạn có chắc chắn muốn kích hoat trạm ${station.name}?`,
+      onOk: () => {
+        deleteStationMutation.mutateAsync(station.stationId).then((res) => {
           refetch();
         });
       },
@@ -133,12 +149,16 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
         {data?.data.map((station, index) => (
           <div key={index} className="station-item bg-white rounded px-8 py-4 ">
             <div className="item-details text-gray-500 ">
+              <div className="user-email text-sm">ID: {station.stationId}</div>
               <div className="station-name text-base font-bold">
                 {station.name}{" "}
                 {station.isDeleted === false ? (
                   <Tag color="success">Đang hoạt động</Tag>
                 ) : (
                   <Tag color="error">Tạm dừng</Tag>
+                )}{" "}
+                {station.isCentralPoint === true && (
+                  <Tag color="blue">Trạm chính</Tag>
                 )}
               </div>
 
@@ -154,24 +174,27 @@ export const BiikeStationPage = (props: BiikeStationPageProps) => {
               >
                 Xem
               </Button>
-
-              {station.isDeleted === true ? (
-                <Button
-                  type="default"
-                  className="rounded"
-                  onClick={() => handleDeleteStation(station)}
-                >
-                  Kích hoạt
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  danger
-                  className="rounded"
-                  onClick={() => handleDeleteStation(station)}
-                >
-                  Tạm dừng
-                </Button>
+              {station.isCentralPoint === false && (
+                <div>
+                  {station.isDeleted === true ? (
+                    <Button
+                      type="default"
+                      className="rounded"
+                      onClick={() => handleUnlockStation(station)}
+                    >
+                      Kích hoạt
+                    </Button>
+                  ) : (
+                    <Button
+                      type="primary"
+                      danger
+                      className="rounded"
+                      onClick={() => handleDeleteStation(station)}
+                    >
+                      Tạm dừng
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </div>

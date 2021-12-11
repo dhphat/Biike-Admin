@@ -88,11 +88,11 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
   return (
     <div className="biike-dashboard-page flex flex-col">
       <div>
-        <div className="biike-dashboard-tools mb-8">
+        {/* <div className="biike-dashboard-tools mb-8">
           <Button type="primary" className="rounded ">
             Tải báo cáo
           </Button>
-        </div>
+        </div> */}
         <div>
           <div className="site-statistic-demo-card">
             <Row gutter={16}>
@@ -101,7 +101,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
 
                 <Card>
                   <Statistic
-                    title="Tổng người dùng"
+                    title="Tổng người dùng Biiké"
                     value={data?.data.totalUser}
                     precision={0}
                     valueStyle={{ color: "#4885ed" }}
@@ -111,7 +111,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
                 </Card>
                 <Card>
                   <Statistic
-                    title="Người dùng mới"
+                    title="Người dùng mới tháng này"
                     value={data?.data.totalNewUser}
                     precision={0}
                     valueStyle={{ color: "#4885ed" }}
@@ -170,7 +170,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
 
                 <Card>
                   <Statistic
-                    title="Tổng số chuyến"
+                    title="Tổng số chuyến được tạo"
                     value={data?.data.totalTrip}
                     precision={0}
                     valueStyle={{ color: "#3cba54" }}

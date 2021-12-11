@@ -1,5 +1,4 @@
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Select, Button, Image, Modal, Divider, Pagination, Tag } from "antd";
+import { Button, Image, Modal, Divider, Pagination, Tag } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import { useMutation, useQuery } from "react-query";
 import { Voucher, voucherQueryFns } from "src/services/api/voucher";
@@ -26,7 +25,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10,
   });
 
@@ -183,11 +182,21 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
   return (
     <div className="biike-voucher-page px-4">
       <div className="biike-voucher-tools">
+        {/* <div className="biike-feedback-tools">
         <Select
           suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-          defaultValue="all"
-          options={[{ label: "Tất cả", value: "all" }]}
+          defaultValue={-1}
+          options={[
+            { label: "Tất cả", value: -1 },
+            { label: "5 sao", value: 5 },
+            { label: "4 sao", value: 4 },
+            { label: "3 sao", value: 3 },
+            { label: "2 sao", value: 2 },
+            { label: "1 sao", value: 1 },
+          ]}
+          onChange={handleTripStarChange}
         />
+      </div> */}
         <Button
           type="primary"
           className="ml-auto rounded"

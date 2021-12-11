@@ -25,6 +25,7 @@ export interface Station {
   coordinate: string;
   createdDate: string;
   isDeleted: boolean;
+  isCentralPoint: boolean;
 }
 
 export interface StationsResponse

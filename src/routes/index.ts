@@ -134,11 +134,11 @@ export const routes: BiikeMapRoute[] = [
       },
       { name: "Xe", path: "/bike", component: BiikeBikePage },
       { name: "Đánh giá", path: "/feedback", component: BiikeFeedbackPage },
-      {
-        name: "Thông báo",
-        path: "/notification",
-        component: BiikeNotificationPage,
-      },
+      // {
+      //   name: "Thông báo",
+      //   path: "/notification",
+      //   component: BiikeNotificationPage,
+      // },
     ],
   },
 

@@ -36,7 +36,9 @@ export interface User {
   userStar: number;
   totalPoint: number;
   maxTotalPoint: number;
+  isEmailVerified: boolean;
   isBikeVerified: boolean;
+  isPhoneVerified: boolean;
   birthDate: string;
   createdDate: string;
   isDeleted: boolean;

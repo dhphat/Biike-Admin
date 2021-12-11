@@ -98,11 +98,27 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
 
   const handleDeleteRoute = (route: Route) => {
     Modal.confirm({
+      okText: "Tạm dừng tuyến",
+      cancelText: "Thoát",
       type: "confirm",
-      title: `Are you sure to change route from ${route.departureName} to ${route.destinationName}?`,
+      title: `Bạn có chắc chắn muốn tạm dừng tuyến từ ${route.departureName} đến ${route.destinationName}?`,
       onOk: () => {
         deleteRouteMutation.mutateAsync(route.routeId).then((res) => {
           console.log("delete ok!");
+          refetch();
+        });
+      },
+    });
+  };
+
+  const handleUnlockRoute = (route: Route) => {
+    Modal.confirm({
+      okText: "Kích hoạt tuyến",
+      cancelText: "Thoát",
+      type: "confirm",
+      title: `Bạn có chắc chắn muốn kích hoạt tuyến từ ${route.departureName} đến ${route.destinationName}?`,
+      onOk: () => {
+        deleteRouteMutation.mutateAsync(route.routeId).then((res) => {
           refetch();
         });
       },
@@ -142,11 +158,14 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
         {data?.data.map((route) => (
           <div className="route-item bg-white rounded px-8 py-4 ">
             <div className="item-details text-gray-500 ">
-              {route.isDeleted === false ? (
-                <Tag color="success">Đang hoạt động</Tag>
-              ) : (
-                <Tag color="error">Tạm dừng</Tag>
-              )}
+              <div className="user-email text-sm">
+                ID: {route.routeId}{" "}
+                {route.isDeleted === false ? (
+                  <Tag color="success">Đang hoạt động</Tag>
+                ) : (
+                  <Tag color="error">Tạm dừng</Tag>
+                )}
+              </div>
               <div className="route-name text-base font-bold">
                 <AimOutlined /> {route.departureName}
               </div>
@@ -178,7 +197,7 @@ export const BiikeRoutePage = (props: BiikeRoutePageProps) => {
                 <Button
                   type="default"
                   className="rounded"
-                  onClick={() => handleDeleteRoute(route)}
+                  onClick={() => handleUnlockRoute(route)}
                 >
                   Kích hoạt
                 </Button>

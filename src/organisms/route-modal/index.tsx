@@ -1,4 +1,4 @@
-import { CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Button, Form, InputNumber, Modal, Select } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import { useEffect, useState } from "react";
@@ -53,93 +53,99 @@ export const BiikeRouteModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="route-modal-content">
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Khu vực</span>
-            <Form.Item
-              name="areaId"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn khu vực",
-                },
-              ]}
-            >
-              <Select
-                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                // defaultValue="1"
-                options={[{ label: "Trường Đại học FPT", value: 1 }]}
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-              />
-            </Form.Item>
-          </div>
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Trạm đầu</span>
-            <Form.Item
-              name="departureId"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn trạm đầu",
-                },
-              ]}
-            >
-              <Select
-                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                options={data?.data
-                  .filter((station) => station.stationId !== endStationId)
-                  .map((station) => ({
-                    value: station.stationId,
-                    label: station.name,
-                  }))}
-                onChange={handleChangeStartStation}
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-              />
-            </Form.Item>
-          </div>
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Trạm cuối</span>
-            <Form.Item
-              name="destinationId"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn trạm cuối",
-                },
-              ]}
-            >
-              <Select
-                suffixIcon={<CaretDownOutlined className="text-gray-500" />}
-                options={data?.data
-                  .filter((station) => station.stationId !== startStationId)
-                  .map((station) => ({
-                    value: station.stationId,
-                    label: station.name,
-                  }))}
-                onChange={handleChangeEndStation}
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
-              />
-            </Form.Item>
-          </div>
-          <div className=" text-sm font-medium ">
-            <span className="text-gray-500">Điểm mặc định</span>
-            <Form.Item
-              name="defaultPoint"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập điểm mặc định",
-                },
-              ]}
-            >
-              <InputNumber
-                className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500"
-                min="1"
-                max="100"
-                defaultValue="0"
-              />
-            </Form.Item>
+          <Form.Item
+            name="areaId"
+            label="Khu vực"
+            tooltip={{
+              title: "Các trạm được phép chọn sẽ nằm trong khu vực bạn chọn.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn khu vực",
+              },
+            ]}
+          >
+            <Select
+              suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+              // defaultValue=1
+              options={[{ label: "Trường Đại học FPT", value: 1 }]}
+              className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="departureId"
+            label="Trạm đầu"
+            tooltip={{
+              title:
+                "Trạm bắt đầu của tuyến. Hãy đảm bảo 1 trong 2 trạm của tuyến phải có 1 trạm chính.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn trạm đầu",
+              },
+            ]}
+          >
+            <Select
+              suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+              options={data?.data
+                .filter(
+                  (station) =>
+                    station.stationId !== endStationId &&
+                    station.isDeleted !== true
+                )
+                .map((station) => ({
+                  value: station.stationId,
+                  label: station.name,
+                }))}
+              onChange={handleChangeStartStation}
+              className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="destinationId"
+            label="Trạm cuối"
+            tooltip={{
+              title:
+                "Trạm kết thúc của tuyến. Hãy đảm bảo 1 trong 2 trạm của tuyến phải có 1 trạm chính.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn trạm cuối",
+              },
+            ]}
+          >
+            <Select
+              suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+              options={data?.data
+                .filter(
+                  (station) =>
+                    station.stationId !== startStationId &&
+                    station.isDeleted !== true
+                )
+                .map((station) => ({
+                  value: station.stationId,
+                  label: station.name,
+                }))}
+              onChange={handleChangeEndStation}
+              className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
+          </Form.Item>
+
+          <div className=" text-sm mb-5">
+            <span className="text-gray-500">
+              Khoảng cách giữa 2 trạm và điểm của trạm sẽ hiển thị sau khi tuyến
+              tạo thành công.
+            </span>
           </div>
 
           <div className="route-modal-tools">

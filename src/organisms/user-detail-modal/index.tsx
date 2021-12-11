@@ -5,7 +5,7 @@ import {
   StarFilled,
   TeamOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Form, Modal, Tag } from "antd";
+import { Alert, Avatar, Button, Form, Modal, Tag } from "antd";
 import moment from "moment";
 import { useEffect } from "react";
 import { User } from "src/services/api/user";
@@ -94,7 +94,7 @@ export const BiikeUserDetailModal = ({
           </div>
 
           <br />
-          <div className="user-email text-sm font-bold">
+          {/* <div className="user-email text-sm font-bold">
             <span className="text-gray-1000">Số địa chỉ</span>
           </div>
 
@@ -113,19 +113,49 @@ export const BiikeUserDetailModal = ({
             <div className="text-gray-400">Chưa cung cấp</div>
           )}
 
-          <br />
+          <br /> */}
           <div className="user-email text-sm font-bold">
-            <span className="text-gray-1000">Thông tin xe</span>
+            <span className="text-gray-1000">Tình trạng xác minh</span>
           </div>
 
-          <div className="user-email text-sm">
-            <span className="text-gray-500">
-              {user.isBikeVerified === true ? (
-                <Tag color="default">Chưa có xe được xác minh</Tag>
-              ) : (
-                <Tag color="green">Đã có xe được xác minh</Tag>
-              )}
-            </span>
+          <div className="mt-2 mb-2 text-sm">
+            {user.isEmailVerified === true ? (
+              <Alert message="Đã xác minh email" type="success" showIcon />
+            ) : (
+              <Alert message="Chưa xác minh email" type="warning" showIcon />
+            )}
+          </div>
+
+          <div className="mt-2 mb-2 text-sm">
+            {user.isPhoneVerified === true ? (
+              <Alert
+                message="Đã xác minh số điện thoại"
+                type="success"
+                showIcon
+              />
+            ) : (
+              <Alert
+                message="Chưa xác minh số điện thoại"
+                type="warning"
+                showIcon
+              />
+            )}
+          </div>
+
+          <div className="mt-2 mb-2 text-sm">
+            {user.isBikeVerified === true ? (
+              <Alert
+                message="Đã xác minh xe và bằng lái"
+                type="success"
+                showIcon
+              />
+            ) : (
+              <Alert
+                message="Chưa xác minh xe và bằng lái"
+                type="warning"
+                showIcon
+              />
+            )}
           </div>
 
           <br />

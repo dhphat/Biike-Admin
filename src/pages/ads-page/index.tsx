@@ -169,11 +169,11 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
   return (
     <div className="biike-ads-page px-4">
       <div className="biike-ads-tools">
-        <Select
+        {/* <Select
           suffixIcon={<CaretDownOutlined className="text-gray-500" />}
           defaultValue="all"
           options={[{ label: "Tất cả", value: "all" }]}
-        />
+        /> */}
         <Button
           type="primary"
           className="ml-auto rounded"
@@ -199,8 +199,12 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
             <Image
               preview={false}
               height={140}
+              width={200}
               className="advertisement-image rounded"
-              src="https://cdn2.yame.vn/cimg/images/f7fbd2bf-4fca-0100-4145-00186cf38d33.jpg"
+              src={
+                advertisement.advertisementImages[0]?.advertisementImageUrl ||
+                "https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              }
             />
             <div className="item-details text-gray-500 ml-8">
               <div className="advertisement-name text-base font-bold">

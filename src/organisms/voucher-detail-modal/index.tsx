@@ -1,9 +1,4 @@
-import {
-  CaretDownOutlined,
-  EnvironmentOutlined,
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { CaretDownOutlined, UploadOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,

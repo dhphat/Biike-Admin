@@ -1,12 +1,25 @@
-import { Button, Form, Input, Modal, Row, Col, Divider } from "antd";
+import { Button, Form, Input, Modal, Row, Col, Divider, List } from "antd";
 import { useEffect } from "react";
 import { Voucher } from "src/services/api/voucher";
-import { VoucherCode } from "src/services/api/voucher-code";
+import {
+  VoucherCode,
+  voucherCodeQueryFns,
+} from "src/services/api/voucher-code";
 import "./index.scss";
+import { useQuery } from "react-query";
+import { useState } from "react";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { useToggle } from "src/hooks/useToggle";
+
+interface VoucherCodeDetailModal {
+  openId: number;
+  data?: VoucherCode;
+}
 
 interface BiikeVoucherCodeModalProps {
-  visibleManage: [boolean, (openID: number) => void];
+  visibleManage: ReturnType<typeof useToggle>;
   voucher?: Voucher;
+  voucherCode?: VoucherCode;
   onOk?: (id: number, data: any, closeModalCallback?: () => void) => void;
   isUpdating?: boolean;
 }
@@ -17,21 +30,57 @@ export const BiikeVoucherCodeModal = ({
   onOk,
   isUpdating,
 }: BiikeVoucherCodeModalProps) => {
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+    total: 10,
+  });
+
+  const { data, isFetching, refetch } = useQuery(
+    [
+      `/voucherCodes/vouchers/${voucher?.voucherId}`,
+      pagination.page,
+      pagination.pageSize,
+    ],
+    () =>
+      voucherCodeQueryFns.getVoucherCode(
+        {
+          page: pagination.page,
+          limit: pagination.pageSize,
+        },
+        voucher?.voucherId
+      ),
+
+    {
+      onSuccess: (data) => {
+        setPagination((prev) => ({ ...prev, total: data._meta.totalRecord }));
+      },
+    }
+  );
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      ...(pageSize !== prev.pageSize ? { pageSize, page: 1 } : {}),
+    }));
+  };
+
   const [visible, toggleVisible] = visibleManage;
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (visible && voucher) {
-      form.setFieldsValue(voucher);
-    }
-  }, [visible]);
+  // useEffect(() => {
+  //   if (visible && voucher) {
+  //     form.setFieldsValue(voucher);
+  //   }
+  // }, [visible]);
 
   const handleCloseModal = () => {
-    voucher && toggleVisible(voucher.voucherId);
+    toggleVisible(false);
   };
 
   const handleSubmitForm = (values: any) => {
-    voucher && onOk?.(voucher.voucherId, values, handleCloseModal);
+    onOk?.(values, handleCloseModal);
   };
 
   const { TextArea } = Input;
@@ -44,7 +93,7 @@ export const BiikeVoucherCodeModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="voucher-code-modal-content">
           <br />
 
@@ -63,20 +112,38 @@ export const BiikeVoucherCodeModal = ({
               <div className="voucher-email text-sm">
                 Còn lại: {voucher?.remaining}
               </div>
+              <Divider />
+
+              <div className="voucher-email text-sm">Danh sách mã code</div>
+              {data?.data.map((voucherCode, index) => (
+                <div key={index}>
+                  {voucherCode.isRedeem == true ? (
+                    <p className="text-green-500">
+                      {voucherCode.voucherCodeName}
+                    </p>
+                  ) : (
+                    <p className="text-gray-500">
+                      {voucherCode.voucherCodeName}
+                    </p>
+                  )}
+                </div>
+              ))}
             </Col>
             <Col span={12}>
-              <div className=" text-sm font-medium ">
-                <span className="text-gray-500">Danh sách mã</span>
-                <Form.Item name="voucherCode">
-                  <TextArea
-                    className="mt-2"
-                    autoSize={{ minRows: 20, maxRows: 100 }}
-                    placeholder=""
-                  >
-                    Các voucher ở đây
-                  </TextArea>
-                </Form.Item>
-              </div>
+              <Form.Item
+                name="voucherCodes"
+                label="Thêm mã"
+                tooltip={{
+                  title: "Bạn chỉ được thêm mã.",
+                  icon: <InfoCircleOutlined />,
+                }}
+              >
+                <TextArea
+                  className="mt-2"
+                  autoSize={{ minRows: 20, maxRows: 100 }}
+                  placeholder=""
+                ></TextArea>
+              </Form.Item>
             </Col>
           </Row>
 
@@ -85,13 +152,8 @@ export const BiikeVoucherCodeModal = ({
           <div className="voucher-code-modal-tools mt-4">
             <Button onClick={handleCloseModal}>Thoát</Button>
 
-            <Button
-              type="primary"
-              className="rounded"
-              htmlType="submit"
-              loading={isUpdating}
-            >
-              Cập nhật
+            <Button type="primary" className="rounded" htmlType="submit">
+              Thêm mã
             </Button>
           </div>
         </div>

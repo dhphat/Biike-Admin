@@ -1,4 +1,4 @@
-import { Select, Button, Modal, Pagination, Divider } from "antd";
+import { Select, Button, Modal, Pagination, Divider, Row, Col } from "antd";
 import { useMutation, useQuery } from "react-query";
 import { useState } from "react";
 import { useToggle } from "src/hooks/useToggle";
@@ -23,8 +23,8 @@ export const BiikeVoucherCategoryPage = (
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 10,
-    total: 10,
+    pageSize: 100,
+    total: 100,
   });
 
   const { data, isFetching, refetch } = useQuery(
@@ -142,49 +142,55 @@ export const BiikeVoucherCategoryPage = (
         onOk={handleCreateVoucherCategory}
       />
       <div className="biike-voucher-category-content">
-        {data?.data.map((voucherCategory, index) => (
-          <div className="voucher-category-item bg-white rounded px-8 py-4 ">
-            <div className="item-details text-gray-500 text-base font-bold">
-              {voucherCategory.categoryName}
-            </div>
-            <div className="item-tools">
-              <Button
-                type="primary"
-                className="rounded"
-                onClick={() => openVoucherCategoryDetailModal(voucherCategory)}
-              >
-                Xem
-              </Button>
+        <Row gutter={24}>
+          {data?.data.map((voucherCategory, index) => (
+            <Col span={12}>
+              <div className="mb-5 voucher-category-item bg-white rounded px-8 py-4 ">
+                <div className="item-details text-gray-500 text-base font-bold">
+                  {voucherCategory.categoryName}
+                </div>
+                <div className="item-tools">
+                  <Button
+                    type="primary"
+                    className="rounded"
+                    onClick={() =>
+                      openVoucherCategoryDetailModal(voucherCategory)
+                    }
+                  >
+                    Xem
+                  </Button>
 
-              <BiikeVoucherCategoryDetailModal
-                visibleManage={[
-                  voucherCategoryDetailModal.openId ===
-                    voucherCategory.voucherCategoryId,
-                  toggleVoucherCategoryDetailModalVisible,
-                ]}
-                voucherCategory={voucherCategory}
-                onOk={handleUpdateVoucherCategory}
-                isUpdating={updateVoucherCategoryMutation.isLoading}
-              />
+                  <BiikeVoucherCategoryDetailModal
+                    visibleManage={[
+                      voucherCategoryDetailModal.openId ===
+                        voucherCategory.voucherCategoryId,
+                      toggleVoucherCategoryDetailModalVisible,
+                    ]}
+                    voucherCategory={voucherCategory}
+                    onOk={handleUpdateVoucherCategory}
+                    isUpdating={updateVoucherCategoryMutation.isLoading}
+                  />
 
-              <Button
-                type="primary"
-                danger
-                className="rounded"
-                onClick={() => handleDeleteVoucherCategory(voucherCategory)}
-              >
-                Xóa
-              </Button>
-            </div>
-          </div>
-        ))}
+                  <Button
+                    type="primary"
+                    danger
+                    className="rounded"
+                    onClick={() => handleDeleteVoucherCategory(voucherCategory)}
+                  >
+                    Xóa
+                  </Button>
+                </div>
+              </div>
+            </Col>
+          ))}
+        </Row>
         <Divider />
-        <Pagination
+        {/* <Pagination
           current={pagination.page}
           pageSize={pagination.pageSize}
           onChange={handlePageChange}
           total={pagination.total}
-        />
+        /> */}
       </div>
     </div>
   );

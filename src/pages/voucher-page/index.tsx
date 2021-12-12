@@ -8,6 +8,7 @@ import { BiikeVoucherCodeModal } from "src/organisms/voucher-code-modal";
 import "./index.scss";
 import { useState } from "react";
 import { RcFile } from "antd/lib/upload";
+import { voucherCodeQueryFns } from "src/services/api/voucher-code";
 
 interface VoucherDetailModal {
   openId: number;
@@ -163,6 +164,41 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
     setVoucherCodeModal({ openId: data.voucherId, data });
   };
 
+  // const updateVoucherCodeMutation = useMutation(
+  //   voucherCodeQueryFns.createVoucherCode
+  // );
+
+  // const handleUpdateVoucherCode = (
+  //   id: number,
+  //   values: any,
+  //   closeModalCallback?: () => void
+  // ) => {
+  //   updateVoucherCodeMutation.mutateAsync([id, values]).then((res) => {
+  //     closeModalCallback?.();
+  //     refetch();
+  //   });
+  // };
+
+  //create voucher code
+  const [isCreateVoucherCodeModalVisible, toggleCreateVoucherCodeModalVisible] =
+    useToggle(false);
+
+  const createVoucherCodeMutation = useMutation(
+    voucherCodeQueryFns.createVoucherCode
+  );
+
+  const handleCreateVoucherCode = (
+    values: any,
+    closeModalCallback?: () => void
+  ) => {
+    createVoucherCodeMutation.mutateAsync(values).then((res) => {
+      if (res.data) {
+        closeModalCallback?.();
+        refetch();
+      }
+    });
+  };
+
   // delete
   const deleteVoucherMutation = useMutation(voucherQueryFns.deleteVoucher);
 
@@ -239,7 +275,7 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
                 {voucher.voucherName}
               </div>
               <div className="voucher-email text-sm">
-                <Tag color="blue">{voucher.brand}</Tag>
+                <Tag color="#87d068">{voucher.brand}</Tag>
                 <Tag color="green">{voucher.voucherCategoryName}</Tag>
               </div>
               <div className="voucher-phone text-sm">
@@ -250,13 +286,13 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
               </div>
             </div>
             <div className="item-tools ml-auto mr-8">
-              <Button
+              {/* <Button
                 type="primary"
                 className="rounded"
                 onClick={() => openVoucherCodeModal(voucher)}
               >
                 Code
-              </Button>
+              </Button> */}
               <Button
                 type="primary"
                 className="rounded"
@@ -288,10 +324,10 @@ export const BiikeVoucherPage = (props: BiikeVoucherPageProps) => {
         <BiikeVoucherCodeModal
           visibleManage={[
             voucherCodeModal.openId === voucherCodeModal.data?.voucherId,
-            toggleVoucherCodeModalVisible,
+            toggleCreateVoucherCodeModalVisible,
           ]}
           voucher={voucherCodeModal.data}
-          // onOk={handleUpdateVoucherCode}
+          onOk={handleCreateVoucherCode}
           isUpdating={updateVoucherMutation.isLoading}
         />
 

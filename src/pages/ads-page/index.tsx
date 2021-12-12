@@ -1,5 +1,4 @@
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Select, Button, Image, Modal, Divider, Pagination, Tag } from "antd";
+import { Button, Image, Modal, Divider, Pagination, Tag } from "antd";
 import { useToggle } from "src/hooks/useToggle";
 import { useMutation, useQuery } from "react-query";
 import {
@@ -17,18 +16,13 @@ interface AdvertisementDetailModal {
   data?: Advertisement;
 }
 
-interface AdvertisementCodeModal {
-  openId: number;
-  data?: Advertisement;
-}
-
 interface BiikeAdvertisementPageProps {}
 
 export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
   // paging
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 10,
   });
 
@@ -55,6 +49,27 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
   };
 
   // create
+  // const [
+  //   isCreateAdvertisementModalVisible,
+  //   toggleCreateAdvertisementModalVisible,
+  // ] = useToggle(false);
+
+  // const createAdvertisementMutation = useMutation(
+  //   advertisementQueryFns.createAdvertisement
+  // );
+
+  // const handleCreateAdvertisement = (
+  //   values: any,
+  //   closeModalCallback?: () => void
+  // ) => {
+  //   createAdvertisementMutation.mutateAsync(values).then((res) => {
+  //     if (res.data) {
+  //       closeModalCallback?.();
+  //       refetch();
+  //     }
+  //   });
+  // };
+
   const [
     isCreateAdvertisementModalVisible,
     toggleCreateAdvertisementModalVisible,
@@ -66,14 +81,25 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
 
   const handleCreateAdvertisement = (
     values: any,
+    newBanners: RcFile[],
     closeModalCallback?: () => void
   ) => {
-    createAdvertisementMutation.mutateAsync(values).then((res) => {
-      if (res.data) {
-        closeModalCallback?.();
-        refetch();
-      }
+    const formData = new FormData();
+    formData.append("imageType", "4");
+    newBanners.forEach((banner) => {
+      formData.append("imageList", banner);
     });
+    if (newBanners.length) {
+      uploadImageMutation.mutateAsync(formData).then((uploadRes) => {
+        const advertisementImages: string[] = uploadRes.data;
+        createAdvertisementMutation
+          .mutateAsync({ ...values, advertisementImages })
+          .then((createRes) => {
+            closeModalCallback?.();
+            refetch();
+          });
+      });
+    }
   };
 
   // update advertisement
@@ -117,7 +143,7 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
     closeModalCallback?: () => void
   ) => {
     const formData = new FormData();
-    formData.append("imageType", "3");
+    formData.append("imageType", "4");
     newBanners.forEach((banner) => {
       formData.append("imageList", banner);
     });
@@ -207,15 +233,22 @@ export const BiikeAdvertisementPage = (props: BiikeAdvertisementPageProps) => {
               }
             />
             <div className="item-details text-gray-500 ml-8">
+              <div className="voucher-email text-sm">
+                ID: {advertisement.advertisementId}
+              </div>
               <div className="advertisement-name text-base font-bold">
                 {advertisement.title}
               </div>
               <div className="advertisement-email text-sm">
-                <Tag color="blue">{advertisement.brand}</Tag>
-                <Tag color="green">Đang hoạt động</Tag>
+                <Tag color="#108ee9">{advertisement.brand}</Tag>
+                {advertisement.isActive === true ? (
+                  <Tag color="blue">Đang hoạt động</Tag>
+                ) : (
+                  <Tag color="red">Đang tắt</Tag>
+                )}
               </div>
               <div className="advertisement-phone text-sm">
-                Lượt click: 1000
+                Lượt click: {advertisement.totalClickCount}
               </div>
             </div>
             <div className="item-tools ml-auto mr-8">

@@ -77,7 +77,7 @@ export const BiikeHomePage = (props: BiikeHomePageProps) => {
     label: {
       type: "inner",
       offset: "-30%",
-      content: ({ value }: any) => (value > 10 ? `${value.toFixed(2)}%` : " "),
+      content: ({ value }: any) => (value > 10 ? `${value.toFixed(0)}%` : " "),
       style: {
         fontSize: 14,
         textAlign: "center",

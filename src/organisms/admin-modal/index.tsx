@@ -1,6 +1,8 @@
-import { CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Select } from "antd";
+import { useQuery } from "react-query";
 import { useToggle } from "src/hooks/useToggle";
+import { userQueryFns } from "src/services/api/user";
 import "./index.scss";
 
 interface BiikeAdminModalProps {
@@ -23,6 +25,11 @@ export const BiikeAdminModal = ({
     onOk?.(values, handleCloseModal);
   };
 
+  // load list user
+  const { data } = useQuery(["users"], () =>
+    userQueryFns.users({ limit: 100, page: 1 })
+  );
+
   return (
     <Modal
       className="biike-admin-modal rounded"
@@ -31,34 +38,33 @@ export const BiikeAdminModal = ({
       closable={false}
       footer={null}
     >
-      <Form form={form} onFinish={handleSubmitForm}>
+      <Form layout="vertical" form={form} onFinish={handleSubmitForm}>
         <div className="admin-modal-content">
-          <Form.Item name="fullname">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Họ và tên</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-
-          <Form.Item name="phoneNumber">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Số điện thoại</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-
-          <Form.Item name="email">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Email</span>
-              <Input className="mt-2 bg-blue-gray-100 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
-          </Form.Item>
-
-          <Form.Item name="password">
-            <div className=" text-sm font-medium ">
-              <span className="text-gray-500">Mật khẩu</span>
-              <Input.Password className="mt-2 rounded border-blue-gray-100 py-1 text-blue-gray-500" />
-            </div>
+          <Form.Item
+            name="userId"
+            label="Email"
+            tooltip={{
+              title:
+                "Khi người dùng trở thành admin, họ sẽ không thể sử dụng chức năng của Biker hay Keer. Khi xóa admin khỏi danh sách, người dùng có thể tiếp tục làm Biker hay Keer mà dữ liệu vẫn không bị mất.",
+              icon: <InfoCircleOutlined />,
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn email",
+              },
+            ]}
+          >
+            <Select
+              suffixIcon={<CaretDownOutlined className="text-gray-500" />}
+              options={data?.data
+                .filter((user) => user.isDeleted !== true && user.roleId !== 3)
+                .map((user) => ({
+                  value: user.userId,
+                  label: user.email,
+                }))}
+              className="bg-blue-gray-100 rounded border-blue-gray-100 text-blue-gray-500"
+            />
           </Form.Item>
 
           <div className="admin-modal-tools">

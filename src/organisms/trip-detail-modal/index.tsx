@@ -118,26 +118,24 @@ export const BiikeTripDetailModal = ({
             </Col>
 
             <Col span={12}>
-              {trip?.status != 5 && (
-                <div className="ml-auto flex pa-10 items-center">
-                  {trip?.bikerId == null ? (
-                    <div className="flex-col flex mr-2 font-sans ">
-                      <span className="text-gray-500 ">Biker </span>
-                      <span className="text-base">Chưa có người chở</span>
-                    </div>
-                  ) : (
-                    <div className="flex-col flex mr-2 font-sans ">
-                      <span className="text-gray-500 ">
-                        Biker{" "}
-                        <Tag color="green">Biển số xe: {trip?.plateNumber}</Tag>
-                      </span>
-                      <span className="text-base font-bold">
-                        {trip?.bikerFullname}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="ml-auto flex pa-10 items-center">
+                {trip?.bikerId == null ? (
+                  <div className="flex-col flex mr-2 font-sans ">
+                    <span className="text-gray-500 ">Biker </span>
+                    <span className="text-base">Chưa có người chở</span>
+                  </div>
+                ) : (
+                  <div className="flex-col flex mr-2 font-sans ">
+                    <span className="text-gray-500 ">
+                      Biker{" "}
+                      <Tag color="green">Biển số xe: {trip?.plateNumber}</Tag>
+                    </span>
+                    <span className="text-base font-bold">
+                      {trip?.bikerFullname}
+                    </span>
+                  </div>
+                )}
+              </div>
             </Col>
           </Row>
           <Divider />

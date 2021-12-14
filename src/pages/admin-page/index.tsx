@@ -48,7 +48,7 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
   const [isCreateAdminModalVisible, toggleCreateAdminModalVisible] =
     useToggle(false);
 
-  const createAdminMutation = useMutation(userQueryFns.createUser);
+  const createAdminMutation = useMutation(userQueryFns.adminRole);
 
   const handleCreateAdmin = (values: any, closeModalCallback?: () => void) => {
     createAdminMutation.mutateAsync(values).then((res) => {
@@ -112,7 +112,7 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
           className="rounded "
           onClick={toggleCreateAdminModalVisible}
         >
-          Thêm
+          Thêm admin
         </Button>
       </div>
 
@@ -139,36 +139,13 @@ export const BiikeAdminPage = (props: BiikeAdminPageProps) => {
                   <div className="admin-email text-sm">{admin.email}</div>
                 </div>
                 <div className="item-tools">
-                  <Button
-                    type="primary"
-                    className="rounded"
-                    onClick={() => openAdminDetailModal(admin)}
-                  >
-                    Xem
-                  </Button>
-                  <BiikeAdminDetailModal
-                    visibleManage={[
-                      adminDetailModal.openId === admin.userId,
-                      toggleAdminDetailModalVisible,
-                    ]}
-                    admin={admin}
-                  />
-                  {admin.isDeleted === true ? (
+                  {data.data.length > 2 && (
                     <Button
                       type="default"
                       className="rounded"
                       onClick={() => handleDeleteUser(admin)}
                     >
-                      Mở khóa
-                    </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      danger
-                      className="rounded"
-                      onClick={() => handleDeleteUser(admin)}
-                    >
-                      Khóa
+                      Gỡ
                     </Button>
                   )}
                 </div>

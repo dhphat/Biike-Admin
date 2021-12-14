@@ -8,12 +8,19 @@ interface UsersParams {
 export const userQueryFns = {
   users: (params: UsersParams): Promise<UsersResponse> =>
     fetchApis.GET("/users", params),
+
   user: (id: number): Promise<UserResponse> => fetchApis.GET(`/user/${id}`),
+
   deleteUser: (id: number) => fetchApis.DELETE(`/users/${id}`),
+
   createUser: (body: object): Promise<UserResponse> =>
     fetchApis.POST(`/users`, body),
+
   editProfile: ([id, body]: [number, object]): Promise<UserResponse> =>
     fetchApis.PUT(`/users/${id}/profile`, body),
+
+  adminRole: (id: number): Promise<UserResponse> =>
+    fetchApis.PUT(`/users/${id}/adminRole`),
 };
 
 export interface UserAddress {
